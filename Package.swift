@@ -11,7 +11,7 @@ let package = Package(
     products: [
         .library(
             name: "DynamicSwiftSDK",
-            targets: ["DynamicSwiftSDK"]
+            targets: ["DynamicSwiftSDKWrapper"]
         ),
     ],
     dependencies: [
@@ -22,6 +22,14 @@ let package = Package(
         .binaryTarget(
             name: "DynamicSwiftSDK",
             path: "./DynamicSwiftSDK.xcframework"
+        ),
+        .target(
+            name: "DynamicSwiftSDKWrapper",
+            dependencies: [
+                "DynamicSwiftSDK",
+                .product(name: "HTTPTypes", package: "swift-http-types"),
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+            ]
         ),
     ]
 )

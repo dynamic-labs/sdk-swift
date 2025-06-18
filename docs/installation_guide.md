@@ -15,7 +15,7 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/dynamic-labs/sdk-swift.git", from: "0.0.1")
+    .package(url: "https://github.com/dynamic-labs/sdk-swift.git", from: "0.0.2")
 ]
 ```
 
@@ -23,7 +23,7 @@ dependencies: [
 
 1. File → Add Package Dependencies
 2. Enter the repository URL: `https://github.com/dynamic-labs/sdk-swift.git`
-3. Select version `0.0.1` or `from: 0.0.1`
+3. Select version `0.0.2` or `from: 0.0.2`
 4. Add to your target
 
 ## Setup in App
