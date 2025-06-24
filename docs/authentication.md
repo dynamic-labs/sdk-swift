@@ -133,23 +133,6 @@ if let currentUser = dynamicClient.authenticatedUser {
 dynamicClient.logout()
 ```
 
-## Error Handling
-
-Common authentication errors:
-
-- **Invalid OTP**: The verification code is incorrect or expired
-- **Network Error**: Check internet connection
-- **Invalid Email/Phone**: Ensure correct format
-- **Rate Limiting**: Too many attempts, wait before retrying
-
-## Best Practices
-
-1. **Input Validation**: Validate email and phone formats before sending OTP
-2. **Loading States**: Show loading indicators during async operations
-3. **Error Messages**: Provide clear error messages to users
-4. **Secure Storage**: The SDK handles secure token storage automatically
-5. **Session Management**: Check authentication state on app launch
-
 ## Key Data Types
 
 ### OTPVerification
