@@ -11,7 +11,7 @@ Social authentication allows users to sign in to your app using their existing s
 Before implementing social authentication, you must enable and configure the desired providers in your Dynamic dashboard:
 
 1. Log in to [Dynamic Dashboard](https://app.dynamic.xyz/dashboard)
-2. Navigate to **Configurations** → **Social Providers**
+2. Navigate to **Log in and User Profile** → **Social**
 3. Enable the providers you want to support
 4. Configure OAuth settings for each provider
 
@@ -47,19 +47,6 @@ for provider in providers {
 }
 ```
 
-### Provider Types
-
-```swift
-public enum ProviderType: String {
-    case apple = "apple"
-    case google = "google" 
-    case twitter = "twitter"
-    case discord = "discord"
-    case github = "github"
-    case twitch = "twitch"
-}
-```
-
 ### Implement Social Login
 
 ```swift
@@ -82,6 +69,18 @@ do {
 } catch {
     print("Social login failed: \(error)")
     // Handle error appropriately
+}
+```
+### Provider Types
+
+```swift
+public enum ProviderType: String {
+    case apple = "apple"
+    case google = "google" 
+    case twitter = "twitter"
+    case discord = "discord"
+    case github = "github"
+    case twitch = "twitch"
 }
 ```
 
