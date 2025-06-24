@@ -2,9 +2,11 @@
 
 The Dynamic Swift SDK provides a comprehensive solution for wallet interactions, authentication, and blockchain integrations in iOS applications.
 
-## Installation
+## Documentation
 
-For detailed installation instructions, see the [Installation Guide](docs/installation_guide.md).
+- [Installation Guide](docs/installation_guide.md) - Get started with the SDK
+- [Authentication Guide](docs/authentication.md) - Implement email OTP and SMS OTP authentication
+- [Social Authentication Guide](docs/social_authentication.md) - Set up social login with Apple, Google, and more
 
 ## Support
 
