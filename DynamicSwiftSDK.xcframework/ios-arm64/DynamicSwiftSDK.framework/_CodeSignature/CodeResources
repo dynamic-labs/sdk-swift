@@ -4,154 +4,77 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/DynamicWalletCoreSwift</key>
-		<data>
-		K9e3qPdxIdjMoCcIR0Zl+5vKlZk=
-		</data>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Frameworks/SodotSdk.framework/Frameworks/libsodot_executor.a</key>
-		<data>
-		8If6jVUDKgNKGV55sXfQ8PyEmM4=
-		</data>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Frameworks/SodotSdk.framework/Info.plist</key>
-		<data>
-		tQ2uA6k2eVpIjSha+4ju5N6g5B4=
-		</data>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Frameworks/SodotSdk.framework/SodotSdk</key>
-		<data>
-		d5ti8sJQnAxYopYtgTgzBMz/IM4=
-		</data>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Frameworks/SodotSdk.framework/_CodeSignature/CodeResources</key>
-		<data>
-		CylhYFDksWOIsOeWn+R68GfLHa8=
-		</data>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Info.plist</key>
-		<data>
-		ThyBfgoG9pYxmYXfVuvr7zTuLmo=
-		</data>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/_CodeSignature/CodeResources</key>
-		<data>
-		AwTBgIdhYNZsc0dGH0ys4xYBPiY=
-		</data>
 		<key>Info.plist</key>
 		<data>
 		/hVvoCNrcj99sktSJ0GxN8ihJdc=
 		</data>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo</key>
 		<data>
-		Rk7IZwVGxZxsLpMdCJB7Uie7V2M=
+		JFMc7N27zEcAx3ibI9d39wYKP4Y=
 		</data>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		R7j2eV8uHK442JIZ64pIqC3mXtw=
+		lcvNEn9mppPvzr9VVhAk08Nv0Rc=
 		</data>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		52/R+FjmxMjZx6tw9e0cHnySYD0=
+		LZOm5X0pdpedoUmy+42OmD04++k=
 		</data>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
-		BVTyCe0pFux0R7ptl2+8mIu9sTY=
+		hq+L+zsLZ3fx489kDmLpaMo8KAE=
 		</data>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		8m29SDKb6+CGekoGL8frWLBDpx0=
+		yCWMaE3EmKETdYA5rpGwdpAB7OM=
 		</data>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		ZR96aJd9crYT24Xg8ZbjRd+giag=
+		AaT1ipmS4lG2tKsSGr1TVSqY3/s=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/DynamicWalletCoreSwift</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			n626O8UzMoWSxbbKnnSa3QXo58RjIg+BNooncqHBGWw=
-			</data>
-		</dict>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Frameworks/SodotSdk.framework/Frameworks/libsodot_executor.a</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			kBv9X6RD0IdWq60Zm21U65QlJCeDQNgCvU4VOohd7xM=
-			</data>
-		</dict>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Frameworks/SodotSdk.framework/Info.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			oqcRx6TT3+mOdbwOm0C0aLeE5+1Fn8stxSofdNkXqfo=
-			</data>
-		</dict>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Frameworks/SodotSdk.framework/SodotSdk</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			+IbZxI4cvumpY1erQBft47VFCy1Hexv+uzGDKvUFVaA=
-			</data>
-		</dict>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Frameworks/SodotSdk.framework/_CodeSignature/CodeResources</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			cKWKu4aMesqxyGd6MIC6RYghrcTomyJV1qD55Caf8q0=
-			</data>
-		</dict>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/Info.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			fDewvYDetnyH6riWzxhai+Mw+b88aYQQm6WrBRsiQ7M=
-			</data>
-		</dict>
-		<key>Frameworks/DynamicWalletCoreSwift.framework/_CodeSignature/CodeResources</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			iuV7TPD6+ZvURDTv2v2S+NR1RCDnZG3rp2NyyPjy3Bw=
-			</data>
-		</dict>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			bGp/tztGBQfO3dfbn03qgl/xwhYC8He6i5nxYBzQBUQ=
+			xAvSW31pzR+AQLt2LZg0wCZj2zz7vLxyrC/XaEzwVtw=
 			</data>
 		</dict>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			20bcV0ImvY1Fx5+J7MP7dV0MNoOhW8P1f6n959j/sGA=
+			YHh4dIpO77vBitmViV7epfCVXw9d5+toodn28MTlFP8=
 			</data>
 		</dict>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			KDMusHzbOMtqNMI2SPFTLRpYIkFfsitngtKApa5M1PY=
+			1QJPCoQDRaH7X4kremc15oW5ozBT1wu5yYsW2pdrQ6s=
 			</data>
 		</dict>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			73x7rk2JOyBxRQLgxp+N3XOXwW6m/V2wTEm1VrBsChg=
+			pu9MPJmUTMyNqWKMrCfEVlC6EyYv1KuToXMaxAjknQc=
 			</data>
 		</dict>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			sF9V9X1NWZqrp6ofGqIfbD7T/rUbMq08X3PwO9lIXqE=
+			BwcrpFlkkV8NC9GEdaxgn1AhJc2rWDFbixR+NEfQuHs=
 			</data>
 		</dict>
 		<key>Modules/DynamicSwiftSDK.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			wqhPfQAy5Qeq7L/f/q4u4h/g2c/V85AKz6MPfDr3kLU=
+			BayvqbjjGQqKDdBoLTlyzgcVz4MNTH7+CGv851anv64=
 			</data>
 		</dict>
 	</dict>

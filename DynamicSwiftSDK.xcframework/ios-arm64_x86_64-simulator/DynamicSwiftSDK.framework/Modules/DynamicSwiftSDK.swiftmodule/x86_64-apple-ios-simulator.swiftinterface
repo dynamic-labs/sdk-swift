@@ -1,15 +1,17 @@
 // swift-interface-format-version: 1.0
 // swift-compiler-version: Apple Swift version 6.1.2 effective-5.10 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)
 // swift-module-flags: -target x86_64-apple-ios18.5-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name DynamicSwiftSDK
-// swift-module-flags-ignorable:  -interface-compiler-version 6.1.2
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -interface-compiler-version 6.1.2
+@_exported import BigInt
 import Combine
+import CommonCrypto
 import Foundation
 import Foundation/*.Data*/
 import Foundation/*.Date*/
 import Foundation/*.URL*/
-import HTTPTypes
+@_exported import HTTPTypes
 import ObjectiveC
-import OpenAPIRuntime
+@_exported import OpenAPIRuntime
 import SafariServices
 import Security
 import Swift
@@ -17,8 +19,86 @@ import UIKit
 import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
-public func initializeClient(client: DynamicSwiftSDK.DynamicClient) async throws
-public func createDynamicClient(config: DynamicSwiftSDK.DynamicClientConfig) -> DynamicSwiftSDK.DynamicClient
+public class ABIFunctionEncoder {
+  public func encode(_ value: any DynamicSwiftSDK.ABIType, staticSize: Swift.Int? = nil) throws
+  public func encode<T>(_ values: [T], staticSize: Swift.Int? = nil) throws where T : DynamicSwiftSDK.ABIType
+  public init(_ name: Swift.String)
+  public func encoded() throws -> Foundation.Data
+  @objc deinit
+}
+public func sign(environmentId: Swift.String, token: Swift.String, walletId: Swift.String, message: Swift.String, clientKeyShares: [Swift.String]) async throws -> Swift.String
+@_Concurrency.MainActor public func addEthereumConnector(to client: DynamicSwiftSDK.DynamicClient, networkConfigProvider: (any DynamicSwiftSDK.NetworkConfigurationProvider)? = nil, initialChainId: Swift.Int? = nil) async throws
+@_hasMissingDesignatedInitializers public actor SettingsNetworkConfigurationProvider : DynamicSwiftSDK.NetworkConfigurationProvider {
+  public func getNetwork(for chainId: Swift.Int) async throws -> DynamicSwiftSDK.EvmNetwork
+  public func getAllSupportedNetworks() async -> [DynamicSwiftSDK.EvmNetwork]
+  @objc deinit
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  @_semantics("defaultActor") nonisolated final public var unownedExecutor: _Concurrency.UnownedSerialExecutor {
+    get
+  }
+}
+public func getPrimaryWallet(client: DynamicSwiftSDK.DynamicClient) throws -> DynamicSwiftSDK.EthereumWallet?
+public typealias HexString = Swift.String
+extension Foundation.Data {
+  public func toHexString(shouldPrefix: Swift.Bool = true) -> DynamicSwiftSDK.HexString
+}
+extension Swift.String {
+  public func toHexData() throws -> Foundation.Data
+}
+public enum EthereumConnectorError : Swift.Error {
+  case noChainId
+  public static func == (a: DynamicSwiftSDK.EthereumConnectorError, b: DynamicSwiftSDK.EthereumConnectorError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers public class ABIEncoder {
+  public enum EncodedValue {
+    case value(bytes: [Swift.UInt8], isDynamic: Swift.Bool, staticLength: Swift.Int)
+    indirect case container(values: [DynamicSwiftSDK.ABIEncoder.EncodedValue], isDynamic: Swift.Bool, size: Swift.Int?)
+    public var bytes: [Swift.UInt8] {
+      get
+    }
+    public var hexString: Swift.String {
+      get
+    }
+  }
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class ABIDecoder {
+  @objc deinit
+}
+public func formatEvmMessage(_ message: Swift.String) throws -> Foundation.Data
+public func formatEvmMessage(message: Foundation.Data) throws -> Foundation.Data
+@_Concurrency.MainActor public func createWalletAccount(client: DynamicSwiftSDK.DynamicClient) async throws -> Swift.String
+public struct DynamicCoreConfig {
+  public var apiBaseUrl: Swift.String?
+  public init(apiBaseUrl: Swift.String? = nil)
+}
+public func waitForInit(client: DynamicSwiftSDK.DynamicClient) async throws
+public struct BaseError : Swift.Error {
+  public let name: Swift.String
+  public let shortMessage: Swift.String
+  public let cause: (any Swift.Error)?
+  public let docsURL: Foundation.URL?
+  public init(name: Swift.String = "BaseError", shortMessage: Swift.String, cause: (any Swift.Error)? = nil, docsURL: Foundation.URL? = nil)
+}
+@_Concurrency.MainActor public func sendSmsOtp(client: DynamicSwiftSDK.DynamicClient, phoneNumber: Swift.String, phoneCountryCode: Swift.String, isoCountryCode: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
+@_Concurrency.MainActor public func socialLogin(client: DynamicSwiftSDK.DynamicClient, with provider: DynamicSwiftSDK.ProviderType) async throws -> DynamicSwiftSDK.SdkUser
+public enum ProjectSettingsError : Swift.Error {
+  case badRequest(Swift.String)
+  case unprocessable(Swift.String)
+  case serverError(Swift.String)
+  case unexpectedStatus(Swift.Int)
+}
+public func fetchProjectSettings(client: DynamicSwiftSDK.DynamicClient) async throws -> DynamicSwiftSDK.ProjectSettings
+@_Concurrency.MainActor public func initializeClient(client: DynamicSwiftSDK.DynamicClient) async throws
+public struct DynamicClientConfig {
+  public let environmentId: Swift.String
+  public let coreConfig: DynamicSwiftSDK.DynamicCoreConfig?
+  public init(environmentId: Swift.String, coreConfig: DynamicSwiftSDK.DynamicCoreConfig? = nil)
+}
 final public class DynamicSessionState : Foundation.ObservableObject {
   @Combine.Published @_projectedValueProperty($isLoggedIn) final public var isLoggedIn: Swift.Bool {
     get
@@ -36,28 +116,23 @@ final public class DynamicSessionState : Foundation.ObservableObject {
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit
 }
-public func generateOAuthState() -> Swift.String
 public func sign(client: DynamicSwiftSDK.DynamicClient, accountAddress: Swift.String, message: Swift.String) async throws -> Swift.String
-public struct DynamicCoreConfig {
-  public var apiBaseUrl: Swift.String?
-  public init(apiBaseUrl: Swift.String? = nil)
+public func getCore(client: DynamicSwiftSDK.DynamicClient) -> DynamicSwiftSDK.DynamicCore
+public typealias ProjectSettings = DynamicSwiftSDK.Components.Schemas.ProjectSettings
+public typealias SdkUser = DynamicSwiftSDK.Components.Schemas.SdkUser
+public typealias ChainEnum = DynamicSwiftSDK.Components.Schemas.ChainEnum
+public typealias Currency = DynamicSwiftSDK.Components.Schemas.Currency
+public typealias NativeCurrency = DynamicSwiftSDK.Components.Schemas.NativeCurrency
+public typealias JwtVerifiedCredential = DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential
+public typealias NetworkConfigurationResponse = DynamicSwiftSDK.Components.Schemas.NetworkConfigurationResponse
+public typealias Provider = DynamicSwiftSDK.Components.Schemas.Provider
+public typealias ProviderType = DynamicSwiftSDK.Components.Schemas.ProviderEnum
+public struct DynamicCore {
 }
-public struct BaseError : Swift.Error {
-  public let name: Swift.String
-  public let shortMessage: Swift.String
-  public let cause: (any Swift.Error)?
-  public let docsURL: Foundation.URL?
-  public init(name: Swift.String = "BaseError", shortMessage: Swift.String, cause: (any Swift.Error)? = nil, docsURL: Foundation.URL? = nil)
+extension Swift.Array where Element == DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential {
+  public func sortedByLastSelected() -> [DynamicSwiftSDK.JwtVerifiedCredential]
 }
-extension Foundation.Data {
-  public init?(hex: Swift.String)
-}
-public func sendSmsOtp(client: DynamicSwiftSDK.DynamicClient, phoneNumber: Swift.String, phoneCountryCode: Swift.String, isoCountryCode: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
-public struct DynamicClientConfig {
-  public let environmentId: Swift.String
-  public let coreConfig: DynamicSwiftSDK.DynamicCoreConfig?
-  public init(environmentId: Swift.String, coreConfig: DynamicSwiftSDK.DynamicCoreConfig? = nil)
-}
+public func verifyOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
 public struct OTPVerification {
   public let email: Swift.String?
   public let phoneNumber: Swift.String?
@@ -65,17 +140,18 @@ public struct OTPVerification {
   public let isoCountryCode: Swift.String?
   public let verificationUUID: Swift.String
 }
-public func getCore(client: DynamicSwiftSDK.DynamicClient) -> DynamicSwiftSDK.DynamicCore
-public func bindSessionState(_ state: DynamicSwiftSDK.DynamicSessionState, to client: DynamicSwiftSDK.DynamicClient)
-public typealias ProviderType = DynamicSwiftSDK.Components.Schemas.ProviderEnum
-public func getWalletIdFromAddress(client: DynamicSwiftSDK.DynamicClient, address: Swift.String) -> Swift.String?
-public struct DynamicCore {
-}
 public struct DynamicClient {
+  public init(core: DynamicSwiftSDK.DynamicCore)
   public var initStatus: DynamicSwiftSDK.DynamicCoreState.InitStatus {
     get
   }
+  public var projectSettings: DynamicSwiftSDK.ProjectSettings? {
+    get
+  }
   public var token: Swift.String? {
+    get
+  }
+  public var user: DynamicSwiftSDK.SdkUser? {
     get
   }
   public var walletAccounts: [DynamicSwiftSDK.WalletAccount] {
@@ -93,10 +169,8 @@ extension DynamicSwiftSDK.DynamicClient : Swift.CustomStringConvertible, Swift.C
     get
   }
 }
-public struct WalletAccount {
-  public let walletId: Swift.String
-  public let accountAddress: Swift.String
-}
+public func bindSessionState(_ state: DynamicSwiftSDK.DynamicSessionState, to client: DynamicSwiftSDK.DynamicClient)
+public func getWalletIdFromAddress(client: DynamicSwiftSDK.DynamicClient, address: Swift.String) -> Swift.String?
 public struct DynamicCoreState {
   public enum InitStatus {
     case uninitialized
@@ -115,19 +189,1189 @@ public struct DynamicCoreState {
   public var walletAccounts: [DynamicSwiftSDK.WalletAccount]
   public var isLoggedIn: Swift.Bool
 }
-public func createWalletAccount(client: DynamicSwiftSDK.DynamicClient) async throws -> Swift.String
-public func waitForInit(client: DynamicSwiftSDK.DynamicClient) async throws
+public func verifySmsOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
+@_Concurrency.MainActor public func logout(client: DynamicSwiftSDK.DynamicClient) async throws
 public func subscribeToSelector<Slice>(_ client: DynamicSwiftSDK.DynamicClient, selector: @escaping (DynamicSwiftSDK.DynamicCoreState) -> Slice, onChange: @escaping (Slice) -> Swift.Void) -> () -> Swift.Void where Slice : Swift.Equatable
-public func logout(client: DynamicSwiftSDK.DynamicClient) async throws
 @_Concurrency.MainActor public func presentSafariAuth(url: Foundation.URL, onDismiss: @escaping () -> Swift.Void, onCallback: @escaping (Foundation.URL) -> Swift.Void) throws
 @_Concurrency.MainActor public func dismissSafariAuth()
-public enum ProjectSettingsError : Swift.Error {
-  case badRequest(Swift.String)
-  case unprocessable(Swift.String)
-  case serverError(Swift.String)
-  case unexpectedStatus(Swift.Int)
+@_Concurrency.MainActor public func sendEmailOtp(client: DynamicSwiftSDK.DynamicClient, email: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
+@_Concurrency.MainActor public func getEnabledSocialProviders(client: DynamicSwiftSDK.DynamicClient) async throws -> [DynamicSwiftSDK.Provider]
+public struct WalletAccount {
+  public let walletId: Swift.String
+  public let accountAddress: Swift.String
 }
-public func sendEmailOtp(client: DynamicSwiftSDK.DynamicClient, email: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
+public func createDynamicClient(config: DynamicSwiftSDK.DynamicClientConfig) -> DynamicSwiftSDK.DynamicClient
+public struct DynamicLogger {
+}
+public struct Logger {
+}
+public func randomURLSafeString(length: Swift.Int) -> Swift.String
+public func generateOAuthState() -> Swift.String
+public struct EthereumTransaction : Swift.Equatable, Swift.Codable {
+  public let from: DynamicSwiftSDK.EthereumAddress?
+  public let to: DynamicSwiftSDK.EthereumAddress
+  public let data: Foundation.Data?
+  public var nonce: Swift.Int?
+  public let blockNumber: DynamicSwiftSDK.EthereumBlock?
+  public let input: Swift.String?
+  public var hash: Foundation.Data? {
+    get
+  }
+  public var chainId: Swift.Int? {
+    get
+    set
+  }
+  public init(to: DynamicSwiftSDK.EthereumAddress, data: Foundation.Data)
+  public var raw: Foundation.Data? {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  public static func == (a: DynamicSwiftSDK.EthereumTransaction, b: DynamicSwiftSDK.EthereumTransaction) -> Swift.Bool
+}
+public struct SignedTransaction {
+  public let signature: DynamicSwiftSDK.Signature
+  public var raw: Foundation.Data? {
+    get
+  }
+  public var hash: Foundation.Data? {
+    get
+  }
+}
+public struct TypedVariable : Swift.Codable, Swift.Equatable {
+  public var name: Swift.String
+  public var type: Swift.String
+  public init(name: Swift.String, type: Swift.String)
+  public static func == (a: DynamicSwiftSDK.TypedVariable, b: DynamicSwiftSDK.TypedVariable) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct TypedData : Swift.Codable, Swift.Equatable {
+  public var types: [Swift.String : [DynamicSwiftSDK.TypedVariable]]
+  public var primaryType: Swift.String
+  public static func == (a: DynamicSwiftSDK.TypedData, b: DynamicSwiftSDK.TypedData) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension DynamicSwiftSDK.TypedData : Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+}
+extension DynamicSwiftSDK.TypedData {
+  public var typeHash: Foundation.Data {
+    get
+  }
+  public func signableHash() throws -> Foundation.Data
+  public func encodeType(primaryType: Swift.String) -> Foundation.Data
+}
+public struct DynamicSignedTransaction {
+  public let raw: Foundation.Data?
+  public init(raw: Foundation.Data?)
+}
+public enum WalletError : Swift.Error {
+  case signError
+  case emptyRawTransaction
+  case unknownError
+  public static func == (a: DynamicSwiftSDK.WalletError, b: DynamicSwiftSDK.WalletError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol AsyncWallet {
+  func sign(data: Foundation.Data) async throws -> Foundation.Data
+  func sign(message: Foundation.Data) async throws -> Foundation.Data
+  func sign(message: Swift.String) async throws -> Foundation.Data
+  func sign(hash: Swift.String) async throws -> Foundation.Data
+  func sign(hex: Swift.String) async throws -> Foundation.Data
+  func signMessage(message: Foundation.Data) async throws -> Swift.String
+}
+public protocol MPCWallet : DynamicSwiftSDK.AsyncWallet, Swift.Equatable {
+  var walletId: Swift.String { get }
+  var thresholdSignatureScheme: DynamicSwiftSDK.ThresholdSignatureScheme? { get }
+  var derivationPath: [Swift.UInt32]? { get }
+  var accountAddress: DynamicSwiftSDK.BlockchainAddress { get }
+}
+extension DynamicSwiftSDK.MPCWallet {
+  public static func == (lhs: Self, rhs: Self) -> Swift.Bool
+}
+public protocol WalletConnector {
+  associatedtype WalletType : DynamicSwiftSDK.MPCWallet
+  associatedtype NetworkClient
+  var chain: DynamicSwiftSDK.ChainName { get }
+  var primaryWallet: Self.WalletType? { get }
+  var wallets: [Self.WalletType] { get }
+  func getPrimaryWallet() -> Self.WalletType?
+  func getWallets() -> [Self.WalletType]
+  func getWallet(for address: Swift.String) -> Self.WalletType?
+}
+public struct BlockchainAddress : Swift.Hashable, Swift.Equatable, Swift.CustomStringConvertible {
+  public init(_ address: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var shortened: Swift.String {
+    get
+  }
+  public func asString() -> Swift.String
+  public func isEqual(to other: DynamicSwiftSDK.BlockchainAddress, caseSensitive: Swift.Bool = false) -> Swift.Bool
+  public static func == (lhs: DynamicSwiftSDK.BlockchainAddress, rhs: DynamicSwiftSDK.BlockchainAddress) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum EthereumNetwork : Swift.Equatable, Swift.Decodable {
+  case mainnet
+  case sepolia
+  case custom(Swift.String)
+  public static func fromString(_ networkId: Swift.String) -> DynamicSwiftSDK.EthereumNetwork
+  public var stringValue: Swift.String {
+    get
+  }
+  public var intValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public func == (lhs: DynamicSwiftSDK.EthereumNetwork, rhs: DynamicSwiftSDK.EthereumNetwork) -> Swift.Bool
+extension DynamicSwiftSDK.Web3Extensions where Base == Swift.String {
+  public var isNumeric: Swift.Bool {
+    get
+  }
+  public var isAddress: Swift.Bool {
+    get
+  }
+}
+extension DynamicSwiftSDK.Web3Extensions where Base == Foundation.Data {
+  public var keccak256: Foundation.Data {
+    get
+  }
+}
+extension DynamicSwiftSDK.Web3Extensions where Base == Swift.String {
+  public var keccak256: Foundation.Data {
+    get
+  }
+  public var keccak256fromHex: Foundation.Data {
+    get
+  }
+}
+public enum EthereumAccountError : Swift.Error {
+  case createAccountError
+  case importAccountError
+  case loadAccountError
+  case signError
+  public static func == (a: DynamicSwiftSDK.EthereumAccountError, b: DynamicSwiftSDK.EthereumAccountError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol ABIRevertError : DynamicSwiftSDK.ABIFunctionEncodable {
+  var expectedTypes: [any DynamicSwiftSDK.ABIType.Type] { get }
+}
+extension DynamicSwiftSDK.JSONRPCErrorDetail {
+  public func decode<T>(error: T) throws -> [DynamicSwiftSDK.ABIDecoder.DecodedValue] where T : DynamicSwiftSDK.ABIRevertError
+}
+public struct EquatableError : Swift.Error, Swift.Equatable {
+  public static func == (lhs: DynamicSwiftSDK.EquatableError, rhs: DynamicSwiftSDK.EquatableError) -> Swift.Bool
+}
+public enum EthereumClientError : Swift.Error, Swift.Equatable {
+  case tooManyResults
+  case executionError(DynamicSwiftSDK.JSONRPCErrorDetail)
+  case unexpectedReturnValue
+  case noResultFound
+  case decodeIssue
+  case encodeIssue
+  case noInputData
+  case webSocketError(DynamicSwiftSDK.EquatableError)
+  case connectionNotOpen
+  public static func == (a: DynamicSwiftSDK.EthereumClientError, b: DynamicSwiftSDK.EthereumClientError) -> Swift.Bool
+}
+public struct Signature : Swift.Equatable {
+  public let r: Foundation.Data
+  public let s: Foundation.Data
+  public let v: Swift.Int
+  public let recoveryParam: Swift.Int
+  public var flattened: Foundation.Data {
+    get
+  }
+  public init(r: Foundation.Data, s: Foundation.Data, v: Swift.Int, recoveryParam: Swift.Int)
+  public init(raw: Foundation.Data)
+  public static let zero: DynamicSwiftSDK.Signature
+  public static func == (a: DynamicSwiftSDK.Signature, b: DynamicSwiftSDK.Signature) -> Swift.Bool
+}
+public enum EthereumBlock : Swift.Hashable {
+  case Latest
+  case Earliest
+  case Pending
+  case Number(Swift.Int)
+  public var stringValue: Swift.String {
+    get
+  }
+  public var intValue: Swift.Int? {
+    get
+  }
+  public init(rawValue: Swift.Int)
+  public init(rawValue: Swift.String)
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension DynamicSwiftSDK.EthereumBlock : Swift.Codable {
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+extension DynamicSwiftSDK.EthereumBlock : Swift.Comparable {
+  public static func == (lhs: DynamicSwiftSDK.EthereumBlock, rhs: DynamicSwiftSDK.EthereumBlock) -> Swift.Bool
+  public static func < (lhs: DynamicSwiftSDK.EthereumBlock, rhs: DynamicSwiftSDK.EthereumBlock) -> Swift.Bool
+}
+public struct EthereumLog : Swift.Equatable {
+  public let transactionHash: Swift.String?
+  public let blockHash: Swift.String?
+  public let blockNumber: DynamicSwiftSDK.EthereumBlock
+  public let address: DynamicSwiftSDK.EthereumAddress
+  public var data: Swift.String
+  public var topics: [Swift.String]
+  public let removed: Swift.Bool?
+  public static func == (a: DynamicSwiftSDK.EthereumLog, b: DynamicSwiftSDK.EthereumLog) -> Swift.Bool
+}
+extension DynamicSwiftSDK.EthereumLog : Swift.Codable {
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+extension DynamicSwiftSDK.EthereumLog : Swift.Comparable {
+  public static func < (lhs: DynamicSwiftSDK.EthereumLog, rhs: DynamicSwiftSDK.EthereumLog) -> Swift.Bool
+}
+public struct EthereumHeader : Swift.Codable {
+  public let parentHash: Swift.String
+  public let sha3Uncles: Swift.String
+  public let miner: Swift.String
+  public let stateRoot: Swift.String
+  public let transactionsRoot: Swift.String
+  public let receiptsRoot: Swift.String
+  public let logsBloom: Swift.String
+  public let difficulty: Swift.String
+  public let number: Swift.String
+  public let gasLimit: Swift.String
+  public let gasUsed: Swift.String
+  public let timestamp: Swift.String
+  public let extraData: Swift.String
+  public let mixHash: Swift.String
+  public let nonce: Swift.String
+  public let hash: Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public protocol EthereumSingleKeyStorageProtocol {
+  func storePrivateKey(key: Foundation.Data) throws
+  func loadPrivateKey() throws -> Foundation.Data
+}
+public protocol EthereumMultipleKeyStorageProtocol {
+  func deleteAllKeys() throws
+  func deletePrivateKey(for address: DynamicSwiftSDK.EthereumAddress) throws
+  func fetchAccounts() throws -> [DynamicSwiftSDK.EthereumAddress]
+  func loadPrivateKey(for address: DynamicSwiftSDK.EthereumAddress) throws -> Foundation.Data
+  func storePrivateKey(key: Foundation.Data, with address: DynamicSwiftSDK.EthereumAddress) throws
+}
+public enum EthereumKeyStorageError : Swift.Error {
+  case notFound
+  case failedToSave
+  case failedToLoad
+  case failedToDelete
+  public static func == (a: DynamicSwiftSDK.EthereumKeyStorageError, b: DynamicSwiftSDK.EthereumKeyStorageError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public class EthereumKeyLocalStorage : DynamicSwiftSDK.EthereumSingleKeyStorageProtocol {
+  public init()
+  public func storePrivateKey(key: Foundation.Data) throws
+  public func loadPrivateKey() throws -> Foundation.Data
+  @objc deinit
+}
+extension DynamicSwiftSDK.EthereumKeyLocalStorage : DynamicSwiftSDK.EthereumMultipleKeyStorageProtocol {
+  public func fetchAccounts() throws -> [DynamicSwiftSDK.EthereumAddress]
+  public func storePrivateKey(key: Foundation.Data, with address: DynamicSwiftSDK.EthereumAddress) throws
+  public func loadPrivateKey(for address: DynamicSwiftSDK.EthereumAddress) throws -> Foundation.Data
+  public func deleteAllKeys() throws
+  public func deletePrivateKey(for address: DynamicSwiftSDK.EthereumAddress) throws
+}
+extension Swift.Int {
+  public init?(hex: Swift.String)
+}
+extension DynamicSwiftSDK.Web3Extensions where Base == Swift.Int {
+  public var hexString: Swift.String {
+    get
+  }
+}
+extension DynamicSwiftSDK.Web3Extensions where Base == Foundation.Data {
+  public var hexString: Swift.String {
+    get
+  }
+}
+extension Swift.String {
+  public init(bytes: [Swift.UInt8])
+}
+extension DynamicSwiftSDK.Web3Extensions where Base == Swift.String {
+  public var noHexPrefix: Swift.String {
+    get
+  }
+  public var withHexPrefix: Swift.String {
+    get
+  }
+  public var stringValue: Swift.String {
+    get
+  }
+  public var hexData: Foundation.Data? {
+    get
+  }
+}
+public protocol ABIFunctionEncodable {
+  static var name: Swift.String { get }
+  func encode(to encoder: DynamicSwiftSDK.ABIFunctionEncoder) throws
+}
+extension DynamicSwiftSDK.ABIFunctionEncodable {
+  public func decode(_ data: Foundation.Data, expectedTypes: [any DynamicSwiftSDK.ABIType.Type], filteringEmptyEntries filterEmptyEntries: Swift.Bool = true) throws -> [DynamicSwiftSDK.ABIDecoder.DecodedValue]
+}
+extension DynamicSwiftSDK.ABIDecoder {
+  public typealias RawABI = Swift.String
+  public typealias ParsedABIEntry = Swift.String
+  public typealias ABIEntry = [Swift.String]
+  public struct DecodedValue {
+    public func decoded<T>() throws -> T where T : DynamicSwiftSDK.ABIType
+    public func decodedArray<T>() throws -> [T] where T : DynamicSwiftSDK.ABIType
+    public func decodedTupleArray<T>() throws -> [T] where T : DynamicSwiftSDK.ABITuple
+  }
+  public static func decodeData(_ data: DynamicSwiftSDK.ABIDecoder.RawABI, types: [any DynamicSwiftSDK.ABIType.Type], asArray: Swift.Bool = false) throws -> [DynamicSwiftSDK.ABIDecoder.DecodedValue]
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: Swift.String.Type) throws -> Swift.String
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: Swift.Bool.Type) throws -> Swift.Bool
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: DynamicSwiftSDK.EthereumAddress.Type) throws -> DynamicSwiftSDK.EthereumAddress
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: Swift.UInt8.Type) throws -> Swift.UInt8
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: Swift.UInt16.Type) throws -> Swift.UInt16
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: Swift.UInt32.Type) throws -> Swift.UInt32
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: Swift.UInt64.Type) throws -> Swift.UInt64
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: Foundation.URL.Type) throws -> Foundation.URL
+  public static func decode(_ data: DynamicSwiftSDK.ABIDecoder.ParsedABIEntry, to: Foundation.Data.Type) throws -> Foundation.Data
+}
+extension Foundation.Data {
+  public static func ^ (lhs: Foundation.Data, rhs: Foundation.Data) -> Foundation.Data
+}
+extension DynamicSwiftSDK.Web3Extensions where Base == Foundation.Data {
+  public var bytes: [Swift.UInt8] {
+    get
+  }
+  public var strippingZeroesFromBytes: Foundation.Data {
+    get
+  }
+  public var bytes4: Foundation.Data {
+    get
+  }
+  public var bytes32: Foundation.Data {
+    get
+  }
+}
+extension Swift.String {
+  public init(hexFromBytes bytes: [Swift.UInt8])
+}
+extension DynamicSwiftSDK.Web3Extensions where Base == Swift.String {
+  public var bytes: [Swift.UInt8] {
+    get
+  }
+  public var bytesFromHex: [Swift.UInt8]? {
+    get
+  }
+}
+public enum OffchainReadError : Swift.Error {
+  case network
+  case server(code: Swift.Int, message: Swift.String?)
+  case invalidParams
+  case invalidResponse
+  case tooManyRedirections
+}
+public struct JSONRPCResult<T> : Swift.Decodable where T : Swift.Decodable {
+  public var id: Swift.Int
+  public var jsonrpc: Swift.String
+  public var result: T
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct JSONRPCErrorDetail : Swift.Decodable, Swift.Equatable, Swift.CustomStringConvertible {
+  public var code: Swift.Int
+  public var message: Swift.String
+  public var data: Swift.String?
+  public init(code: Swift.Int, message: Swift.String, data: Swift.String?)
+  public var description: Swift.String {
+    get
+  }
+  public static func == (a: DynamicSwiftSDK.JSONRPCErrorDetail, b: DynamicSwiftSDK.JSONRPCErrorDetail) -> Swift.Bool
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct JSONRPCErrorResult : Swift.Decodable {
+  public var id: Swift.Int
+  public var jsonrpc: Swift.String
+  public var error: DynamicSwiftSDK.JSONRPCErrorDetail
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum JSONRPCErrorCode {
+  public static var invalidInput: Swift.Int
+  public static var tooManyResults: Swift.Int
+  public static var contractExecution: Swift.Int
+}
+public enum JSONRPCError : Swift.Error {
+  case executionError(DynamicSwiftSDK.JSONRPCErrorResult)
+  case requestRejected(Foundation.Data)
+  case encodingError
+  case decodingError
+  case unknownError
+  case noResult
+  case invalidConnection
+  case connectionNotOpen
+  case connectionTimeout
+  case pendingRequestsOnReconnecting
+  case maxAttemptsReachedOnReconnecting
+  public var isExecutionError: Swift.Bool {
+    get
+  }
+}
+public enum Topics : Swift.Encodable {
+  case plain([Swift.String?])
+  case composed([[Swift.String]?])
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct EthereumAddress : Swift.Codable, Swift.Hashable {
+  @available(*, deprecated, message: "Shouldn't rely on the actual String representation. Use asString() instead to get an unformatted representation")
+  public var value: Swift.String {
+    get
+  }
+  public static let zero: DynamicSwiftSDK.EthereumAddress
+  public init(_ value: Swift.String)
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: DynamicSwiftSDK.EthereumAddress, rhs: DynamicSwiftSDK.EthereumAddress) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension DynamicSwiftSDK.EthereumAddress {
+  public func asString() -> Swift.String
+  public func asData() -> Foundation.Data?
+  public func toChecksumAddress() -> Swift.String
+}
+extension DynamicSwiftSDK.EthereumAddress : Swift.ExpressibleByStringLiteral {
+  public init(stringLiteral value: Swift.String)
+  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
+  public typealias StringLiteralType = Swift.String
+  public typealias UnicodeScalarLiteralType = Swift.String
+}
+public class BaseEthereumClient {
+  final public let url: Foundation.URL
+  final public let networkProvider: any DynamicSwiftSDK.NetworkProviderProtocol
+  public var network: DynamicSwiftSDK.EthereumNetwork
+  public init(networkProvider: any DynamicSwiftSDK.NetworkProviderProtocol, url: Foundation.URL, logger: DynamicSwiftSDK.Logger? = nil, network: DynamicSwiftSDK.EthereumNetwork)
+  @objc deinit
+}
+extension DynamicSwiftSDK.BaseEthereumClient {
+  public func net_version(completionHandler: @escaping (Swift.Result<DynamicSwiftSDK.EthereumNetwork, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+  @_Concurrency.MainActor public func eth_gasPriceString() async throws -> Swift.String
+  public func eth_blockNumber(completionHandler: @escaping (Swift.Result<Swift.Int, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+  public func eth_getCode(address: DynamicSwiftSDK.EthereumAddress, block: DynamicSwiftSDK.EthereumBlock = .Latest, completionHandler: @escaping (Swift.Result<Swift.String, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+  public func eth_getTransactionCount(address: DynamicSwiftSDK.EthereumAddress, block: DynamicSwiftSDK.EthereumBlock, completionHandler: @escaping (Swift.Result<Swift.Int, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+  public func eth_getBlockByNumber(_ block: DynamicSwiftSDK.EthereumBlock, completionHandler: @escaping (Swift.Result<DynamicSwiftSDK.EthereumBlockInfo, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+  public func eth_getLogs(addresses: [DynamicSwiftSDK.EthereumAddress]?, topics: [Swift.String?]?, fromBlock from: DynamicSwiftSDK.EthereumBlock = .Earliest, toBlock to: DynamicSwiftSDK.EthereumBlock = .Latest, completionHandler: @escaping (Swift.Result<[DynamicSwiftSDK.EthereumLog], DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+  public func eth_getLogs(addresses: [DynamicSwiftSDK.EthereumAddress]?, orTopics topics: [[Swift.String]?]?, fromBlock from: DynamicSwiftSDK.EthereumBlock = .Earliest, toBlock to: DynamicSwiftSDK.EthereumBlock = .Latest, completionHandler: @escaping (Swift.Result<[DynamicSwiftSDK.EthereumLog], DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+}
+public struct RLP {
+  public static func encode(_ item: Any) -> Foundation.Data?
+}
+public class HttpNetworkProvider : DynamicSwiftSDK.NetworkProviderProtocol {
+  final public let session: Foundation.URLSession
+  public init(session: Foundation.URLSession, url: Foundation.URL, headers: [Swift.String : Swift.String]? = nil)
+  @objc deinit
+  public func send<P, U>(method: Swift.String, params: P, receive: U.Type) async throws -> Any where P : Swift.Encodable, U : Swift.Decodable
+}
+public enum KeyUtilError : Swift.Error {
+  case invalidContext
+  case privateKeyInvalid
+  case unknownError
+  case signatureFailure
+  case signatureParseFailure
+  case badArguments
+  public static func == (a: DynamicSwiftSDK.KeyUtilError, b: DynamicSwiftSDK.KeyUtilError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers public class KeyUtil {
+  public static func generatePrivateKeyData() -> Foundation.Data?
+  public static func generatePublicKey(from privateKey: Foundation.Data) throws -> Foundation.Data
+  public static func generateAddress(from publicKey: Foundation.Data) -> DynamicSwiftSDK.EthereumAddress
+  public static func sign(message: Foundation.Data, with privateKey: Foundation.Data, hashing: Swift.Bool) throws -> Foundation.Data
+  public static func recoverPublicKey(message: Foundation.Data, signature: Foundation.Data) throws -> Swift.String
+  @objc deinit
+}
+public enum ABIError : Swift.Error {
+  case invalidSignature
+  case invalidType
+  case invalidValue
+  case incorrectParameterCount
+  case notCurrentlySupported
+  public static func == (a: DynamicSwiftSDK.ABIError, b: DynamicSwiftSDK.ABIError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ABIRawType {
+  case FixedUInt(Swift.Int)
+  case FixedInt(Swift.Int)
+  case FixedAddress
+  case FixedBool
+  case FixedBytes(Swift.Int)
+  case DynamicBytes
+  case DynamicString
+  indirect case FixedArray(DynamicSwiftSDK.ABIRawType, Swift.Int)
+  indirect case DynamicArray(DynamicSwiftSDK.ABIRawType)
+  indirect case Tuple([DynamicSwiftSDK.ABIRawType])
+}
+extension DynamicSwiftSDK.ABIRawType : Swift.RawRepresentable {
+  public init?(rawValue: Swift.String)
+  public var rawValue: Swift.String {
+    get
+  }
+  public typealias RawValue = Swift.String
+}
+public protocol NetworkProviderProtocol {
+  var session: Foundation.URLSession { get }
+  func send<P, U>(method: Swift.String, params: P, receive: U.Type) async throws -> Any where P : Swift.Encodable, U : Swift.Decodable
+}
+public enum EthereumTransactionReceiptStatus : Swift.Int {
+  case success
+  case failure
+  case notProcessed
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public struct EthereumSyncStatus : Swift.Codable {
+  public let result: DynamicSwiftSDK.ResultUnion
+  public init(result: DynamicSwiftSDK.ResultUnion)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum ResultUnion : Swift.Codable {
+  case bool(Swift.Bool)
+  case resultClass(DynamicSwiftSDK.ResultClass)
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct ResultClass : Swift.Codable {
+  public struct Status : Swift.Codable {
+    public let startingBlock: Swift.Int
+    public let currentBlock: Swift.Int
+    public let highestBlock: Swift.Int
+    public let pulledStates: Swift.Int
+    public let knownStates: Swift.Int
+    public init(startingBlock: Swift.Int, currentBlock: Swift.Int, highestBlock: Swift.Int, pulledStates: Swift.Int, knownStates: Swift.Int)
+    public func encode(to encoder: any Swift.Encoder) throws
+    public init(from decoder: any Swift.Decoder) throws
+  }
+  public let syncing: Swift.Bool
+  public let status: DynamicSwiftSDK.ResultClass.Status
+  public init(syncing: Swift.Bool, status: DynamicSwiftSDK.ResultClass.Status)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum EthereumSubscriptionType : Swift.Equatable, Swift.Hashable {
+  case newBlockHeaders
+  case logs(DynamicSwiftSDK.LogsParams?)
+  case newPendingTransactions
+  case syncing
+  public static func == (a: DynamicSwiftSDK.EthereumSubscriptionType, b: DynamicSwiftSDK.EthereumSubscriptionType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct EthereumSubscription : Swift.Hashable {
+  public static func == (a: DynamicSwiftSDK.EthereumSubscription, b: DynamicSwiftSDK.EthereumSubscription) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum EthereumSubscriptionParamElement : Swift.Encodable {
+  case method(Swift.String)
+  case logsParams(DynamicSwiftSDK.LogsParams)
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct LogsParams : Swift.Codable, Swift.Equatable, Swift.Hashable {
+  public let address: DynamicSwiftSDK.EthereumAddress?
+  public let topics: [Swift.String]?
+  public init(address: DynamicSwiftSDK.EthereumAddress?, topics: [Swift.String]?)
+  public static func == (a: DynamicSwiftSDK.LogsParams, b: DynamicSwiftSDK.LogsParams) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public protocol Web3Extendable {
+  associatedtype T
+  var web3: Self.T { get }
+}
+extension DynamicSwiftSDK.Web3Extendable {
+  public var web3: DynamicSwiftSDK.Web3Extensions<Self> {
+    get
+  }
+}
+public struct Web3Extensions<Base> {
+  public var base: Base {
+    get
+  }
+}
+extension Foundation.Data : DynamicSwiftSDK.Web3Extendable {
+  @available(iOS 8.0, tvOS 9.0, watchOS 2.0, macOS 10.10, *)
+  public typealias T = DynamicSwiftSDK.Web3Extensions<Foundation.Data>
+}
+extension Swift.String : DynamicSwiftSDK.Web3Extendable {
+  public typealias T = DynamicSwiftSDK.Web3Extensions<Swift.String>
+}
+extension Swift.Int : DynamicSwiftSDK.Web3Extendable {
+  public typealias T = DynamicSwiftSDK.Web3Extensions<Swift.Int>
+}
+public enum CallResolution {
+  case noOffchain(failOnExecutionError: Swift.Bool)
+  case offchainAllowed(maxRedirects: Swift.Int)
+}
+public struct EthereumBlockInfo : Swift.Equatable {
+  public var number: DynamicSwiftSDK.EthereumBlock
+  public var timestamp: Foundation.Date
+  public var transactions: [Swift.String]
+  public static func == (a: DynamicSwiftSDK.EthereumBlockInfo, b: DynamicSwiftSDK.EthereumBlockInfo) -> Swift.Bool
+}
+extension DynamicSwiftSDK.EthereumBlockInfo : Swift.Codable {
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public protocol ABIType {
+  static var rawType: DynamicSwiftSDK.ABIRawType { get }
+  typealias ParserFunction = ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  static var parser: Self.ParserFunction { get }
+}
+extension Swift.String : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: Swift.String.ParserFunction {
+    get
+  }
+}
+extension Swift.Bool : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: Swift.Bool.ParserFunction {
+    get
+  }
+}
+extension DynamicSwiftSDK.EthereumAddress : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: DynamicSwiftSDK.EthereumAddress.ParserFunction {
+    get
+  }
+}
+extension Swift.UInt8 : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: Swift.UInt8.ParserFunction {
+    get
+  }
+}
+extension Swift.UInt16 : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: Swift.UInt16.ParserFunction {
+    get
+  }
+}
+extension Swift.UInt32 : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: Swift.UInt32.ParserFunction {
+    get
+  }
+}
+extension Swift.UInt64 : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: Swift.UInt64.ParserFunction {
+    get
+  }
+}
+extension Foundation.URL : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: Foundation.URL.ParserFunction {
+    get
+  }
+}
+extension DynamicSwiftSDK.ABITuple {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: Self.ParserFunction {
+    get
+  }
+}
+extension Foundation.Data : DynamicSwiftSDK.ABIType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+}
+public protocol ABIStaticSizeDataType : DynamicSwiftSDK.ABIType {
+}
+public struct Data1 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data2 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data3 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data4 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data5 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data6 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data7 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data8 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data9 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data10 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data11 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data12 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data13 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data14 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data15 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data16 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data17 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data18 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data19 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data20 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data21 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data22 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data23 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data24 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data25 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data26 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data27 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data28 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data29 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data30 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data31 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct Data32 : DynamicSwiftSDK.ABIStaticSizeDataType {
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: ([Swift.String]) throws -> any DynamicSwiftSDK.ABIType
+  public init(data: Foundation.Data)
+}
+public struct ABIArray<T> : DynamicSwiftSDK.ABIType where T : DynamicSwiftSDK.ABIType {
+  public init(values: [T])
+  public static var rawType: DynamicSwiftSDK.ABIRawType {
+    get
+  }
+  public static var parser: DynamicSwiftSDK.ABIArray<T>.ParserFunction {
+    get
+  }
+}
+extension DynamicSwiftSDK.ABIEncoder {
+  public static func encode(_ value: any DynamicSwiftSDK.ABIType, staticSize: Swift.Int? = nil, packed: Swift.Bool = false) throws -> DynamicSwiftSDK.ABIEncoder.EncodedValue
+  public static func encode<T>(_ values: [T], staticSize: Swift.Int? = nil) throws -> DynamicSwiftSDK.ABIEncoder.EncodedValue where T : DynamicSwiftSDK.ABIType
+}
+public struct OffchainLookup : DynamicSwiftSDK.ABIRevertError {
+  public var expectedTypes: [any DynamicSwiftSDK.ABIType.Type] {
+    get
+  }
+  public static var name: Swift.String
+  public var address: DynamicSwiftSDK.EthereumAddress
+  public var urls: [Swift.String]
+  public var callData: Foundation.Data
+  public var callbackFunction: Foundation.Data
+  public var extraData: Foundation.Data
+  public func encode(to encoder: DynamicSwiftSDK.ABIFunctionEncoder) throws
+  public init(address: DynamicSwiftSDK.EthereumAddress, urls: [Swift.String], callData: Foundation.Data, callbackFunction: Foundation.Data, extraData: Foundation.Data)
+}
+public func deriveEthereumAccountAddress(from rawPublicKey: Foundation.Data) -> (address: Swift.String, pubkeyHex: Swift.String)
+public protocol ABITupleDecodable {
+  static var types: [any DynamicSwiftSDK.ABIType.Type] { get }
+  init?(data: Swift.String) throws
+  init?(values: [DynamicSwiftSDK.ABIDecoder.DecodedValue]) throws
+}
+extension DynamicSwiftSDK.ABITupleDecodable {
+  public init?(data: Swift.String) throws
+}
+public protocol ABITupleEncodable {
+  var encodableValues: [any DynamicSwiftSDK.ABIType] { get }
+  func encode(to encoder: DynamicSwiftSDK.ABIFunctionEncoder) throws
+}
+public protocol ABITuple : DynamicSwiftSDK.ABITupleDecodable, DynamicSwiftSDK.ABITupleEncodable, DynamicSwiftSDK.ABIType {
+}
+public func addEip191Prefix(message: Foundation.Data) -> Foundation.Data
+public func verifySignature(message: Swift.String, signature: Swift.String, walletAddress: DynamicSwiftSDK.HexString) throws -> Swift.Bool
+public struct EvmNetwork {
+  public let name: Swift.String
+  public let chainId: Swift.Int
+  public let blockExplorerUrls: [Swift.String]
+  public let iconUrls: [Swift.String]
+  public let networkId: Swift.Int
+  public let vanityName: Swift.String?
+  public let rpcUrls: [Swift.String]
+  public let isTestnet: Swift.Bool?
+}
+public enum SupportedEthereumNetwork : Swift.CaseIterable, Swift.Equatable {
+  case ethereumMainnet
+  case sepoliaTestnet
+  case baseMainnet
+  case baseSepolia
+  case polygonMainnet
+  case arbitrumOne
+  case optimismMainnet
+  case optimismSepolia
+  public static func fromChainId(_ chainId: Swift.Int) -> DynamicSwiftSDK.SupportedEthereumNetwork?
+  public var chainId: Swift.Int {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var vanityName: Swift.String? {
+    get
+  }
+  public var chainConfig: DynamicSwiftSDK.EvmNetwork {
+    get
+  }
+  public static func == (a: DynamicSwiftSDK.SupportedEthereumNetwork, b: DynamicSwiftSDK.SupportedEthereumNetwork) -> Swift.Bool
+  public typealias AllCases = [DynamicSwiftSDK.SupportedEthereumNetwork]
+  nonisolated public static var allCases: [DynamicSwiftSDK.SupportedEthereumNetwork] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol NetworkConfigurationProvider {
+  func getNetwork(for chainId: Swift.Int) async throws -> DynamicSwiftSDK.EvmNetwork
+  func getAllSupportedNetworks() async -> [DynamicSwiftSDK.EvmNetwork]
+  func getRpcUrl(for chainId: Swift.Int) async throws -> Swift.String
+}
+extension DynamicSwiftSDK.NetworkConfigurationProvider {
+  public func getRpcUrl(for chainId: Swift.Int) async throws -> Swift.String
+}
+public enum NetworkError : Swift.Error {
+  case unsupportedChain(Swift.Int)
+  case missingRPC(Swift.Int)
+}
+public actor GenericNetworkConfigurationProvider : DynamicSwiftSDK.NetworkConfigurationProvider {
+  public init()
+  public func getNetwork(for chainId: Swift.Int) throws -> DynamicSwiftSDK.EvmNetwork
+  public func getAllSupportedNetworks() -> [DynamicSwiftSDK.EvmNetwork]
+  public func register(custom network: DynamicSwiftSDK.EvmNetwork)
+  @objc deinit
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  @_semantics("defaultActor") nonisolated final public var unownedExecutor: _Concurrency.UnownedSerialExecutor {
+    get
+  }
+}
+public struct EthereumWallet {
+  public let address: DynamicSwiftSDK.EthereumAddress
+  public let walletId: Swift.String
+  public let chainName: DynamicSwiftSDK.ChainName?
+  public let thresholdSignatureScheme: DynamicSwiftSDK.ThresholdSignatureScheme?
+  public let derivationPath: [Swift.UInt32]?
+  public var accountAddress: DynamicSwiftSDK.BlockchainAddress {
+    get
+  }
+  public init(address: Swift.String, client: DynamicSwiftSDK.DynamicClient, thresholdSignatureScheme: DynamicSwiftSDK.ThresholdSignatureScheme? = .twoOfTwo) throws
+}
+extension DynamicSwiftSDK.EthereumWallet {
+  @_Concurrency.MainActor public func getNetworkClient(for chainId: Swift.Int) async throws -> DynamicSwiftSDK.BaseEthereumClient
+  public func switchNetwork(to network: DynamicSwiftSDK.EvmNetwork) async throws
+}
+extension DynamicSwiftSDK.EthereumWallet {
+  public func getBalanceString() async throws -> Swift.String
+}
+extension DynamicSwiftSDK.EthereumWallet : Swift.Equatable {
+  public static func == (lhs: DynamicSwiftSDK.EthereumWallet, rhs: DynamicSwiftSDK.EthereumWallet) -> Swift.Bool
+}
+extension DynamicSwiftSDK.EthereumWallet {
+  public func sign(data: Foundation.Data) async throws -> Foundation.Data
+  public func sign(message: Foundation.Data) async throws -> Foundation.Data
+  public func sign(message: Swift.String) async throws -> Foundation.Data
+  public func sign(hash: Swift.String) async throws -> Foundation.Data
+  public func sign(hex: DynamicSwiftSDK.HexString) async throws -> Foundation.Data
+  public func signMessage(_ message: Swift.String) async throws -> Swift.String
+  public func signMessage(message: Foundation.Data) async throws -> Swift.String
+  public func signMessage(message: DynamicSwiftSDK.TypedData) async throws -> Swift.String
+}
+extension DynamicSwiftSDK.EthereumWallet {
+  public func sign(data: Foundation.Data) throws -> Foundation.Data
+  public func sign(message: Foundation.Data) throws -> Foundation.Data
+  public func sign(message: Swift.String) throws -> Foundation.Data
+  public func sign(hash: Swift.String) throws -> Foundation.Data
+  public func sign(hex: Swift.String) throws -> Foundation.Data
+  public func signMessage(message: Foundation.Data) throws -> Swift.String
+  public func signMessage(message: DynamicSwiftSDK.TypedData) throws -> Swift.String
+}
+public enum Environment {
+  public static var baseURL: Swift.String {
+    get
+  }
+  public static var relayHost: Swift.String {
+    get
+  }
+}
+public enum ChainName : Swift.String, Swift.Codable, Swift.Hashable, Swift.Sendable, Swift.CaseIterable {
+  case evm
+  case btc
+  case sol
+  public static func fromString(_ value: Swift.String) -> DynamicSwiftSDK.ChainName?
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [DynamicSwiftSDK.ChainName]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [DynamicSwiftSDK.ChainName] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum ThresholdSignatureScheme : Swift.String, Swift.Codable, Swift.Hashable, Swift.Sendable, Swift.CaseIterable {
+  case twoOfTwo
+  case twoOfThree
+  case threeOfFive
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [DynamicSwiftSDK.ThresholdSignatureScheme]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [DynamicSwiftSDK.ThresholdSignatureScheme] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum VerifiedCredentialName : Swift.String, Swift.Codable, Swift.Hashable, Swift.Sendable, Swift.CaseIterable {
+  case bip122
+  case eip155
+  case solana
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [DynamicSwiftSDK.VerifiedCredentialName]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [DynamicSwiftSDK.VerifiedCredentialName] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+extension DynamicSwiftSDK.ChainName {
+  public static func fromVerifiedCredentialName(name: DynamicSwiftSDK.VerifiedCredentialName) -> DynamicSwiftSDK.ChainName?
+}
 public struct Client : DynamicSwiftSDK.APIProtocol {
   public init(serverURL: Foundation.URL, configuration: OpenAPIRuntime.Configuration = .init(), transport: any OpenAPIRuntime.ClientTransport, middlewares: [any OpenAPIRuntime.ClientMiddleware] = [])
   public func getUserFieldsCheck(_ input: DynamicSwiftSDK.Operations.GetUserFieldsCheck.Input) async throws -> DynamicSwiftSDK.Operations.GetUserFieldsCheck.Output
@@ -26259,8 +27503,28 @@ public enum Operations {
     }
   }
 }
+extension DynamicSwiftSDK.EthereumConnectorError : Swift.Equatable {}
+extension DynamicSwiftSDK.EthereumConnectorError : Swift.Hashable {}
 extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Equatable {}
 extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Hashable {}
+extension DynamicSwiftSDK.WalletError : Swift.Equatable {}
+extension DynamicSwiftSDK.WalletError : Swift.Hashable {}
+extension DynamicSwiftSDK.EthereumAccountError : Swift.Equatable {}
+extension DynamicSwiftSDK.EthereumAccountError : Swift.Hashable {}
+extension DynamicSwiftSDK.EthereumKeyStorageError : Swift.Equatable {}
+extension DynamicSwiftSDK.EthereumKeyStorageError : Swift.Hashable {}
+extension DynamicSwiftSDK.KeyUtilError : Swift.Equatable {}
+extension DynamicSwiftSDK.KeyUtilError : Swift.Hashable {}
+extension DynamicSwiftSDK.ABIError : Swift.Equatable {}
+extension DynamicSwiftSDK.ABIError : Swift.Hashable {}
+extension DynamicSwiftSDK.EthereumTransactionReceiptStatus : Swift.Equatable {}
+extension DynamicSwiftSDK.EthereumTransactionReceiptStatus : Swift.Hashable {}
+extension DynamicSwiftSDK.EthereumTransactionReceiptStatus : Swift.RawRepresentable {}
+extension DynamicSwiftSDK.SupportedEthereumNetwork : Swift.Hashable {}
+extension DynamicSwiftSDK.EthereumWallet : DynamicSwiftSDK.MPCWallet {}
+extension DynamicSwiftSDK.ChainName : Swift.RawRepresentable {}
+extension DynamicSwiftSDK.ThresholdSignatureScheme : Swift.RawRepresentable {}
+extension DynamicSwiftSDK.VerifiedCredentialName : Swift.RawRepresentable {}
 extension DynamicSwiftSDK.Components.Schemas.UserFieldsCheckParams.CodingKeys : Swift.Equatable {}
 extension DynamicSwiftSDK.Components.Schemas.UserFieldsCheckParams.CodingKeys : Swift.Hashable {}
 extension DynamicSwiftSDK.Components.Schemas.UserFieldsCheckParams.CodingKeys : Swift.RawRepresentable {}
