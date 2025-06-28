@@ -30,7 +30,6 @@ let package = Package(
                 "DynamicSwiftSDK",
                 .product(name: "HTTPTypes", package: "swift-http-types"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
-                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "BigIntModule", package: "BigInt"),
             ],
             swiftSettings: [

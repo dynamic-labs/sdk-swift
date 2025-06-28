@@ -1,9 +1,5 @@
 # Ethereum Integration Guide
 
-## Overview
-
-The Dynamic Swift SDK provides Ethereum blockchain integration through the `DynamicEthereumCoreSwift` module. This guide covers the Ethereum features demonstrated in the sample application: network configuration, address handling, and transaction operations.
-
 ## Prerequisites
 
 - Dynamic SDK initialized (see [Installation Guide](./installation_guide.md))
