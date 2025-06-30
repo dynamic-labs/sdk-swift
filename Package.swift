@@ -30,9 +30,6 @@ let package = Package(
                 .product(name: "HTTPTypes", package: "swift-http-types"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
             ],
-            swiftSettings: [
-                .unsafeFlags(["-enable-library-evolution"])
-            ]
         ),
     ]
 )
