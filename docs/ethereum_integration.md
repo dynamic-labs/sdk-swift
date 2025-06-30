@@ -91,7 +91,6 @@ do {
 ### Gas Limit for ETH Transfers
 
 ```swift
-import BigIntModule
 
 // Standard gas limit for ETH transfers (used in sample app)
 let gasLimit = BigUInt(21_000) // Standard ETH transfer
@@ -103,7 +102,6 @@ print("ETH Transfer Gas Limit: \(gasLimit)")
 ### Create Transaction
 
 ```swift
-import BigIntModule
 
 let fromAddress = ethereumWallet.address
 let toAddress = EthereumAddress("0xRecipientAddress")
@@ -161,7 +159,6 @@ do {
 ### Get Latest Balance and Convert to ETH
 
 ```swift
-import BigIntModule
 
 // Get latest balance (sample app usage)
 do {

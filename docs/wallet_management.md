@@ -112,7 +112,6 @@ print("Account Address: \(accountAddress)")
 ### Get Wallet Balance
 
 ```swift
-import BigIntModule
 
 // Get latest balance
 do {
@@ -194,7 +193,6 @@ do {
 ### Send ETH Transaction
 
 ```swift
-import BigIntModule
 
 // Transaction parameters (as used in sample app)
 let amount = BigUInt(10000000000000000) // 0.01 ETH in wei
