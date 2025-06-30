@@ -15,7 +15,16 @@ Before implementing social authentication, you must enable and configure the des
 3. Enable the providers you want to support
 4. Configure OAuth settings for each provider
 
-### 2. Info.plist Configuration
+### 2. Configure Deep Link URL
+
+Register your app's redirect URL in the Dynamic dashboard:
+
+1. Go to [Dynamic Dashboard](https://app.dynamic.xyz/dashboard/security)
+2. Navigate to **Security** → **Whitelist Mobile Deeplink**
+3. Add your app's deep link URL (e.g., `myapp://auth/callback`)
+4. Save the configuration
+
+### 3. Info.plist Configuration
 
 Add the following to your `Info.plist` to ensure Safari authentication works properly:
 
@@ -39,7 +48,7 @@ import DynamicSwiftSDK
 let dynamicClient: DynamicClient
 
 // Fetch enabled providers
-let providers: [ProviderInfo] = try await fetchSocialProviders(client: dynamicClient)
+let providers: [ProviderInfo] = try await getEnabledSocialProviders(client: dynamicClient)
 
 // Check available providers
 for provider in providers {
@@ -54,11 +63,13 @@ import DynamicSwiftSDK
 
 let dynamicClient: DynamicClient
 let provider: ProviderType = .google // or any supported provider
+let deepLinkUrl = "myapp://auth/callback" // Your app's deep link URL (must be whitelisted in Dynamic dashboard)
 
 do {
     let authenticatedUser: SdkUser = try await socialLogin(
         client: dynamicClient,
-        with: provider
+        with: provider,
+        deepLinkUrl: deepLinkUrl
     )
     
     print("Welcome \(authenticatedUser.email ?? "")")

@@ -2,7 +2,7 @@
 // swift-compiler-version: Apple Swift version 6.1.2 effective-5.10 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)
 // swift-module-flags: -target x86_64-apple-ios18.5-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name DynamicSwiftSDK
 // swift-module-flags-ignorable: -no-verify-emitted-module-interface -interface-compiler-version 6.1.2
-@_exported import BigInt
+import AuthenticationServices
 import Combine
 import CommonCrypto
 import Foundation
@@ -10,7 +10,6 @@ import Foundation/*.Data*/
 import Foundation/*.Date*/
 import Foundation/*.URL*/
 @_exported import HTTPTypes
-import ObjectiveC
 @_exported import OpenAPIRuntime
 import SafariServices
 import Security
@@ -38,13 +37,6 @@ public func sign(environmentId: Swift.String, token: Swift.String, walletId: Swi
   }
 }
 public func getPrimaryWallet(client: DynamicSwiftSDK.DynamicClient) throws -> DynamicSwiftSDK.EthereumWallet?
-public typealias HexString = Swift.String
-extension Foundation.Data {
-  public func toHexString(shouldPrefix: Swift.Bool = true) -> DynamicSwiftSDK.HexString
-}
-extension Swift.String {
-  public func toHexData() throws -> Foundation.Data
-}
 public enum EthereumConnectorError : Swift.Error {
   case noChainId
   public static func == (a: DynamicSwiftSDK.EthereumConnectorError, b: DynamicSwiftSDK.EthereumConnectorError) -> Swift.Bool
@@ -71,147 +63,22 @@ public enum EthereumConnectorError : Swift.Error {
 }
 public func formatEvmMessage(_ message: Swift.String) throws -> Foundation.Data
 public func formatEvmMessage(message: Foundation.Data) throws -> Foundation.Data
-@_Concurrency.MainActor public func createWalletAccount(client: DynamicSwiftSDK.DynamicClient) async throws -> Swift.String
-public struct DynamicCoreConfig {
-  public var apiBaseUrl: Swift.String?
-  public init(apiBaseUrl: Swift.String? = nil)
+public protocol EthereumTransactionProtocol {
+  init(from: DynamicSwiftSDK.EthereumAddress?, to: DynamicSwiftSDK.EthereumAddress, value: DynamicSwiftSDK.BigUInt?, data: Foundation.Data?, nonce: Swift.Int?, gasPrice: DynamicSwiftSDK.BigUInt?, gasLimit: DynamicSwiftSDK.BigUInt?, chainId: Swift.Int?)
+  init(from: DynamicSwiftSDK.EthereumAddress?, to: DynamicSwiftSDK.EthereumAddress, data: Foundation.Data, gasPrice: DynamicSwiftSDK.BigUInt, gasLimit: DynamicSwiftSDK.BigUInt)
+  init(to: DynamicSwiftSDK.EthereumAddress, data: Foundation.Data)
+  var raw: Foundation.Data? { get }
+  var hash: Foundation.Data? { get }
 }
-public func waitForInit(client: DynamicSwiftSDK.DynamicClient) async throws
-public struct BaseError : Swift.Error {
-  public let name: Swift.String
-  public let shortMessage: Swift.String
-  public let cause: (any Swift.Error)?
-  public let docsURL: Foundation.URL?
-  public init(name: Swift.String = "BaseError", shortMessage: Swift.String, cause: (any Swift.Error)? = nil, docsURL: Foundation.URL? = nil)
-}
-@_Concurrency.MainActor public func sendSmsOtp(client: DynamicSwiftSDK.DynamicClient, phoneNumber: Swift.String, phoneCountryCode: Swift.String, isoCountryCode: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
-@_Concurrency.MainActor public func socialLogin(client: DynamicSwiftSDK.DynamicClient, with provider: DynamicSwiftSDK.ProviderType) async throws -> DynamicSwiftSDK.SdkUser
-public enum ProjectSettingsError : Swift.Error {
-  case badRequest(Swift.String)
-  case unprocessable(Swift.String)
-  case serverError(Swift.String)
-  case unexpectedStatus(Swift.Int)
-}
-public func fetchProjectSettings(client: DynamicSwiftSDK.DynamicClient) async throws -> DynamicSwiftSDK.ProjectSettings
-@_Concurrency.MainActor public func initializeClient(client: DynamicSwiftSDK.DynamicClient) async throws
-public struct DynamicClientConfig {
-  public let environmentId: Swift.String
-  public let coreConfig: DynamicSwiftSDK.DynamicCoreConfig?
-  public init(environmentId: Swift.String, coreConfig: DynamicSwiftSDK.DynamicCoreConfig? = nil)
-}
-final public class DynamicSessionState : Foundation.ObservableObject {
-  @Combine.Published @_projectedValueProperty($isLoggedIn) final public var isLoggedIn: Swift.Bool {
-    get
-  }
-  final public var $isLoggedIn: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($isInitialized) final public var isInitialized: Swift.Bool {
-    get
-  }
-  final public var $isInitialized: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  public init()
-  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
-  @objc deinit
-}
-public func sign(client: DynamicSwiftSDK.DynamicClient, accountAddress: Swift.String, message: Swift.String) async throws -> Swift.String
-public func getCore(client: DynamicSwiftSDK.DynamicClient) -> DynamicSwiftSDK.DynamicCore
-public typealias ProjectSettings = DynamicSwiftSDK.Components.Schemas.ProjectSettings
-public typealias SdkUser = DynamicSwiftSDK.Components.Schemas.SdkUser
-public typealias ChainEnum = DynamicSwiftSDK.Components.Schemas.ChainEnum
-public typealias Currency = DynamicSwiftSDK.Components.Schemas.Currency
-public typealias NativeCurrency = DynamicSwiftSDK.Components.Schemas.NativeCurrency
-public typealias JwtVerifiedCredential = DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential
-public typealias NetworkConfigurationResponse = DynamicSwiftSDK.Components.Schemas.NetworkConfigurationResponse
-public typealias Provider = DynamicSwiftSDK.Components.Schemas.Provider
-public typealias ProviderType = DynamicSwiftSDK.Components.Schemas.ProviderEnum
-public struct DynamicCore {
-}
-extension Swift.Array where Element == DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential {
-  public func sortedByLastSelected() -> [DynamicSwiftSDK.JwtVerifiedCredential]
-}
-public func verifyOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
-public struct OTPVerification {
-  public let email: Swift.String?
-  public let phoneNumber: Swift.String?
-  public let phoneCountryCode: Swift.String?
-  public let isoCountryCode: Swift.String?
-  public let verificationUUID: Swift.String
-}
-public struct DynamicClient {
-  public init(core: DynamicSwiftSDK.DynamicCore)
-  public var initStatus: DynamicSwiftSDK.DynamicCoreState.InitStatus {
-    get
-  }
-  public var projectSettings: DynamicSwiftSDK.ProjectSettings? {
-    get
-  }
-  public var token: Swift.String? {
-    get
-  }
-  public var user: DynamicSwiftSDK.SdkUser? {
-    get
-  }
-  public var walletAccounts: [DynamicSwiftSDK.WalletAccount] {
-    get
-  }
-  public var isLoggedIn: Swift.Bool? {
-    get
-  }
-}
-extension DynamicSwiftSDK.DynamicClient : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
-  public var description: Swift.String {
-    get
-  }
-  public var debugDescription: Swift.String {
-    get
-  }
-}
-public func bindSessionState(_ state: DynamicSwiftSDK.DynamicSessionState, to client: DynamicSwiftSDK.DynamicClient)
-public func getWalletIdFromAddress(client: DynamicSwiftSDK.DynamicClient, address: Swift.String) -> Swift.String?
-public struct DynamicCoreState {
-  public enum InitStatus {
-    case uninitialized
-    case inProgress
-    case finished
-    case failed
-    public static func == (a: DynamicSwiftSDK.DynamicCoreState.InitStatus, b: DynamicSwiftSDK.DynamicCoreState.InitStatus) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-  public var initStatus: DynamicSwiftSDK.DynamicCoreState.InitStatus
-  public var loaded: Swift.Bool
-  public var token: Swift.String?
-  public var walletAccounts: [DynamicSwiftSDK.WalletAccount]
-  public var isLoggedIn: Swift.Bool
-}
-public func verifySmsOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
-@_Concurrency.MainActor public func logout(client: DynamicSwiftSDK.DynamicClient) async throws
-public func subscribeToSelector<Slice>(_ client: DynamicSwiftSDK.DynamicClient, selector: @escaping (DynamicSwiftSDK.DynamicCoreState) -> Slice, onChange: @escaping (Slice) -> Swift.Void) -> () -> Swift.Void where Slice : Swift.Equatable
-@_Concurrency.MainActor public func presentSafariAuth(url: Foundation.URL, onDismiss: @escaping () -> Swift.Void, onCallback: @escaping (Foundation.URL) -> Swift.Void) throws
-@_Concurrency.MainActor public func dismissSafariAuth()
-@_Concurrency.MainActor public func sendEmailOtp(client: DynamicSwiftSDK.DynamicClient, email: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
-@_Concurrency.MainActor public func getEnabledSocialProviders(client: DynamicSwiftSDK.DynamicClient) async throws -> [DynamicSwiftSDK.Provider]
-public struct WalletAccount {
-  public let walletId: Swift.String
-  public let accountAddress: Swift.String
-}
-public func createDynamicClient(config: DynamicSwiftSDK.DynamicClientConfig) -> DynamicSwiftSDK.DynamicClient
-public struct DynamicLogger {
-}
-public struct Logger {
-}
-public func randomURLSafeString(length: Swift.Int) -> Swift.String
-public func generateOAuthState() -> Swift.String
-public struct EthereumTransaction : Swift.Equatable, Swift.Codable {
+public struct EthereumTransaction : DynamicSwiftSDK.EthereumTransactionProtocol, Swift.Equatable, Swift.Codable {
   public let from: DynamicSwiftSDK.EthereumAddress?
   public let to: DynamicSwiftSDK.EthereumAddress
+  public let value: DynamicSwiftSDK.BigUInt?
   public let data: Foundation.Data?
   public var nonce: Swift.Int?
+  public let gasPrice: DynamicSwiftSDK.BigUInt?
+  public let gasLimit: DynamicSwiftSDK.BigUInt?
+  public let gas: DynamicSwiftSDK.BigUInt?
   public let blockNumber: DynamicSwiftSDK.EthereumBlock?
   public let input: Swift.String?
   public var hash: Foundation.Data? {
@@ -221,6 +88,9 @@ public struct EthereumTransaction : Swift.Equatable, Swift.Codable {
     get
     set
   }
+  public init(from: DynamicSwiftSDK.EthereumAddress?, to: DynamicSwiftSDK.EthereumAddress, value: DynamicSwiftSDK.BigUInt?, data: Foundation.Data?, nonce: Swift.Int?, gasPrice: DynamicSwiftSDK.BigUInt?, gasLimit: DynamicSwiftSDK.BigUInt?, chainId: Swift.Int?)
+  public init(from: DynamicSwiftSDK.EthereumAddress?, to: DynamicSwiftSDK.EthereumAddress, data: Foundation.Data, gasPrice: DynamicSwiftSDK.BigUInt, gasLimit: DynamicSwiftSDK.BigUInt)
+  public init(from: DynamicSwiftSDK.EthereumAddress?, to: DynamicSwiftSDK.EthereumAddress, value: DynamicSwiftSDK.BigUInt = 0, data: Foundation.Data, gasPrice: DynamicSwiftSDK.BigUInt, gasLimit: DynamicSwiftSDK.BigUInt)
   public init(to: DynamicSwiftSDK.EthereumAddress, data: Foundation.Data)
   public var raw: Foundation.Data? {
     get
@@ -264,63 +134,6 @@ extension DynamicSwiftSDK.TypedData {
   }
   public func signableHash() throws -> Foundation.Data
   public func encodeType(primaryType: Swift.String) -> Foundation.Data
-}
-public struct DynamicSignedTransaction {
-  public let raw: Foundation.Data?
-  public init(raw: Foundation.Data?)
-}
-public enum WalletError : Swift.Error {
-  case signError
-  case emptyRawTransaction
-  case unknownError
-  public static func == (a: DynamicSwiftSDK.WalletError, b: DynamicSwiftSDK.WalletError) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-public protocol AsyncWallet {
-  func sign(data: Foundation.Data) async throws -> Foundation.Data
-  func sign(message: Foundation.Data) async throws -> Foundation.Data
-  func sign(message: Swift.String) async throws -> Foundation.Data
-  func sign(hash: Swift.String) async throws -> Foundation.Data
-  func sign(hex: Swift.String) async throws -> Foundation.Data
-  func signMessage(message: Foundation.Data) async throws -> Swift.String
-}
-public protocol MPCWallet : DynamicSwiftSDK.AsyncWallet, Swift.Equatable {
-  var walletId: Swift.String { get }
-  var thresholdSignatureScheme: DynamicSwiftSDK.ThresholdSignatureScheme? { get }
-  var derivationPath: [Swift.UInt32]? { get }
-  var accountAddress: DynamicSwiftSDK.BlockchainAddress { get }
-}
-extension DynamicSwiftSDK.MPCWallet {
-  public static func == (lhs: Self, rhs: Self) -> Swift.Bool
-}
-public protocol WalletConnector {
-  associatedtype WalletType : DynamicSwiftSDK.MPCWallet
-  associatedtype NetworkClient
-  var chain: DynamicSwiftSDK.ChainName { get }
-  var primaryWallet: Self.WalletType? { get }
-  var wallets: [Self.WalletType] { get }
-  func getPrimaryWallet() -> Self.WalletType?
-  func getWallets() -> [Self.WalletType]
-  func getWallet(for address: Swift.String) -> Self.WalletType?
-}
-public struct BlockchainAddress : Swift.Hashable, Swift.Equatable, Swift.CustomStringConvertible {
-  public init(_ address: Swift.String)
-  public var description: Swift.String {
-    get
-  }
-  public var shortened: Swift.String {
-    get
-  }
-  public func asString() -> Swift.String
-  public func isEqual(to other: DynamicSwiftSDK.BlockchainAddress, caseSensitive: Swift.Bool = false) -> Swift.Bool
-  public static func == (lhs: DynamicSwiftSDK.BlockchainAddress, rhs: DynamicSwiftSDK.BlockchainAddress) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
 }
 public enum EthereumNetwork : Swift.Equatable, Swift.Decodable {
   case mainnet
@@ -444,6 +257,63 @@ extension DynamicSwiftSDK.EthereumLog : Swift.Codable {
 }
 extension DynamicSwiftSDK.EthereumLog : Swift.Comparable {
   public static func < (lhs: DynamicSwiftSDK.EthereumLog, rhs: DynamicSwiftSDK.EthereumLog) -> Swift.Bool
+}
+public struct DynamicSignedTransaction {
+  public let raw: Foundation.Data?
+  public init(raw: Foundation.Data?)
+}
+public enum WalletError : Swift.Error {
+  case signError
+  case emptyRawTransaction
+  case unknownError
+  public static func == (a: DynamicSwiftSDK.WalletError, b: DynamicSwiftSDK.WalletError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol AsyncWallet {
+  func sign(data: Foundation.Data) async throws -> Foundation.Data
+  func sign(message: Foundation.Data) async throws -> Foundation.Data
+  func sign(message: Swift.String) async throws -> Foundation.Data
+  func sign(hash: Swift.String) async throws -> Foundation.Data
+  func sign(hex: Swift.String) async throws -> Foundation.Data
+  func signMessage(message: Foundation.Data) async throws -> Swift.String
+}
+public protocol MPCWallet : DynamicSwiftSDK.AsyncWallet, Swift.Equatable {
+  var walletId: Swift.String { get }
+  var thresholdSignatureScheme: DynamicSwiftSDK.ThresholdSignatureScheme? { get }
+  var derivationPath: [Swift.UInt32]? { get }
+  var accountAddress: DynamicSwiftSDK.BlockchainAddress { get }
+}
+extension DynamicSwiftSDK.MPCWallet {
+  public static func == (lhs: Self, rhs: Self) -> Swift.Bool
+}
+public protocol WalletConnector {
+  associatedtype WalletType : DynamicSwiftSDK.MPCWallet
+  associatedtype NetworkClient
+  var chain: DynamicSwiftSDK.ChainName { get }
+  var primaryWallet: Self.WalletType? { get }
+  var wallets: [Self.WalletType] { get }
+  func getPrimaryWallet() -> Self.WalletType?
+  func getWallets() -> [Self.WalletType]
+  func getWallet(for address: Swift.String) -> Self.WalletType?
+}
+public struct BlockchainAddress : Swift.Hashable, Swift.Equatable, Swift.CustomStringConvertible {
+  public init(_ address: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var shortened: Swift.String {
+    get
+  }
+  public func asString() -> Swift.String
+  public func isEqual(to other: DynamicSwiftSDK.BlockchainAddress, caseSensitive: Swift.Bool = false) -> Swift.Bool
+  public static func == (lhs: DynamicSwiftSDK.BlockchainAddress, rhs: DynamicSwiftSDK.BlockchainAddress) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
 }
 public struct EthereumHeader : Swift.Codable {
   public let parentHash: Swift.String
@@ -676,6 +546,8 @@ public class BaseEthereumClient {
 }
 extension DynamicSwiftSDK.BaseEthereumClient {
   public func net_version(completionHandler: @escaping (Swift.Result<DynamicSwiftSDK.EthereumNetwork, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+  public func eth_gasPrice(completionHandler: @escaping (Swift.Result<DynamicSwiftSDK.BigUInt, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
+  @_Concurrency.MainActor public func eth_gasPriceBigInt() async throws -> DynamicSwiftSDK.BigUInt
   @_Concurrency.MainActor public func eth_gasPriceString() async throws -> Swift.String
   public func eth_blockNumber(completionHandler: @escaping (Swift.Result<Swift.Int, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
   public func eth_getCode(address: DynamicSwiftSDK.EthereumAddress, block: DynamicSwiftSDK.EthereumBlock = .Latest, completionHandler: @escaping (Swift.Result<Swift.String, DynamicSwiftSDK.EthereumClientError>) -> Swift.Void)
@@ -713,6 +585,576 @@ public enum KeyUtilError : Swift.Error {
   public static func sign(message: Foundation.Data, with privateKey: Foundation.Data, hashing: Swift.Bool) throws -> Foundation.Data
   public static func recoverPublicKey(message: Foundation.Data, signature: Foundation.Data) throws -> Swift.String
   @objc deinit
+}
+extension DynamicSwiftSDK.BigUInt {
+  public static func + (a: DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+  public static func += (a: inout DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt)
+}
+extension DynamicSwiftSDK.BigInt {
+  public static func + (a: DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func += (a: inout DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt)
+}
+extension DynamicSwiftSDK.BigUInt {
+  public init?<T>(exactly source: T) where T : Swift.BinaryFloatingPoint
+  public init<T>(_ source: T) where T : Swift.BinaryFloatingPoint
+  public init?(exactly source: Foundation.Decimal)
+  public init?(truncating source: Foundation.Decimal)
+}
+extension DynamicSwiftSDK.BigInt {
+  public init?<T>(exactly source: T) where T : Swift.BinaryFloatingPoint
+  public init<T>(_ source: T) where T : Swift.BinaryFloatingPoint
+  public init?(exactly source: Foundation.Decimal)
+  public init?(truncating source: Foundation.Decimal)
+}
+extension Swift.BinaryFloatingPoint where Self.RawExponent : Swift.FixedWidthInteger, Self.RawSignificand : Swift.FixedWidthInteger {
+  public init(_ value: DynamicSwiftSDK.BigInt)
+  public init(_ value: DynamicSwiftSDK.BigUInt)
+}
+extension DynamicSwiftSDK.BigInt.Sign {
+  public init(_ sign: Swift.FloatingPointSign)
+}
+extension Foundation.Decimal {
+  public init(_ value: DynamicSwiftSDK.BigUInt)
+  public init(_ value: DynamicSwiftSDK.BigInt)
+}
+extension DynamicSwiftSDK.BigUInt {
+  public func quotientAndRemainder(dividingBy y: DynamicSwiftSDK.BigUInt) -> (quotient: DynamicSwiftSDK.BigUInt, remainder: DynamicSwiftSDK.BigUInt)
+  public static func / (x: DynamicSwiftSDK.BigUInt, y: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+  public static func % (x: DynamicSwiftSDK.BigUInt, y: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+  public static func /= (x: inout DynamicSwiftSDK.BigUInt, y: DynamicSwiftSDK.BigUInt)
+  public static func %= (x: inout DynamicSwiftSDK.BigUInt, y: DynamicSwiftSDK.BigUInt)
+}
+extension DynamicSwiftSDK.BigInt {
+  public func quotientAndRemainder(dividingBy y: DynamicSwiftSDK.BigInt) -> (quotient: DynamicSwiftSDK.BigInt, remainder: DynamicSwiftSDK.BigInt)
+  public static func / (a: DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func % (a: DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public func modulus(_ mod: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+}
+extension DynamicSwiftSDK.BigInt {
+  public static func /= (a: inout DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt)
+  public static func %= (a: inout DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt)
+}
+extension DynamicSwiftSDK.BigUInt {
+  public init?<S>(_ text: S, radix: Swift.Int = 10) where S : Swift.StringProtocol
+}
+extension DynamicSwiftSDK.BigInt {
+  public init?<S>(_ text: S, radix: Swift.Int = 10) where S : Swift.StringProtocol
+}
+extension Swift.String {
+  public init(_ v: DynamicSwiftSDK.BigUInt)
+  public init(_ v: DynamicSwiftSDK.BigUInt, radix: Swift.Int, uppercase: Swift.Bool = false)
+  public init(_ value: DynamicSwiftSDK.BigInt, radix: Swift.Int = 10, uppercase: Swift.Bool = false)
+}
+extension DynamicSwiftSDK.BigUInt : Swift.ExpressibleByStringLiteral {
+  public init(unicodeScalarLiteral value: Swift.UnicodeScalar)
+  public init(extendedGraphemeClusterLiteral value: Swift.String)
+  public init(stringLiteral value: Swift.StringLiteralType)
+  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
+  public typealias StringLiteralType = Swift.StringLiteralType
+  public typealias UnicodeScalarLiteralType = Swift.UnicodeScalar
+}
+extension DynamicSwiftSDK.BigInt : Swift.ExpressibleByStringLiteral {
+  public init(unicodeScalarLiteral value: Swift.UnicodeScalar)
+  public init(extendedGraphemeClusterLiteral value: Swift.String)
+  public init(stringLiteral value: Swift.StringLiteralType)
+  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
+  public typealias StringLiteralType = Swift.StringLiteralType
+  public typealias UnicodeScalarLiteralType = Swift.UnicodeScalar
+}
+extension DynamicSwiftSDK.BigUInt : Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigInt : Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigUInt : Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigInt : Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigUInt : Swift.CustomPlaygroundDisplayConvertible {
+  public var playgroundDescription: Any {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigInt : Swift.CustomPlaygroundDisplayConvertible {
+  public var playgroundDescription: Any {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigUInt {
+  public mutating func multiply(byWord y: DynamicSwiftSDK.BigUInt.Word)
+  public func multiplied(byWord y: DynamicSwiftSDK.BigUInt.Word) -> DynamicSwiftSDK.BigUInt
+  public mutating func multiplyAndAdd(_ x: DynamicSwiftSDK.BigUInt, _ y: DynamicSwiftSDK.BigUInt.Word, shiftedBy shift: Swift.Int = 0)
+  public func multiplied(by y: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+  public static let directMultiplicationLimit: Swift.Int
+  public static func * (x: DynamicSwiftSDK.BigUInt, y: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+  public static func *= (a: inout DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt)
+}
+extension DynamicSwiftSDK.BigInt {
+  public static func * (a: DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func *= (a: inout DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt)
+}
+extension DynamicSwiftSDK.BigUInt {
+  public func power(_ exponent: Swift.Int) -> DynamicSwiftSDK.BigUInt
+  public func power(_ exponent: DynamicSwiftSDK.BigUInt, modulus: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+}
+extension DynamicSwiftSDK.BigInt {
+  public func power(_ exponent: Swift.Int) -> DynamicSwiftSDK.BigInt
+  public func power(_ exponent: DynamicSwiftSDK.BigInt, modulus: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+}
+extension DynamicSwiftSDK.BigUInt {
+  public static func >>= <Other>(lhs: inout DynamicSwiftSDK.BigUInt, rhs: Other) where Other : Swift.BinaryInteger
+  public static func <<= <Other>(lhs: inout DynamicSwiftSDK.BigUInt, rhs: Other) where Other : Swift.BinaryInteger
+  public static func >> <Other>(lhs: DynamicSwiftSDK.BigUInt, rhs: Other) -> DynamicSwiftSDK.BigUInt where Other : Swift.BinaryInteger
+  public static func << <Other>(lhs: DynamicSwiftSDK.BigUInt, rhs: Other) -> DynamicSwiftSDK.BigUInt where Other : Swift.BinaryInteger
+}
+extension DynamicSwiftSDK.BigInt {
+  public static func &<< (left: DynamicSwiftSDK.BigInt, right: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func &<<= (left: inout DynamicSwiftSDK.BigInt, right: DynamicSwiftSDK.BigInt)
+  public static func &>> (left: DynamicSwiftSDK.BigInt, right: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func &>>= (left: inout DynamicSwiftSDK.BigInt, right: DynamicSwiftSDK.BigInt)
+  public static func << <Other>(lhs: DynamicSwiftSDK.BigInt, rhs: Other) -> DynamicSwiftSDK.BigInt where Other : Swift.BinaryInteger
+  public static func <<= <Other>(lhs: inout DynamicSwiftSDK.BigInt, rhs: Other) where Other : Swift.BinaryInteger
+  public static func >> <Other>(lhs: DynamicSwiftSDK.BigInt, rhs: Other) -> DynamicSwiftSDK.BigInt where Other : Swift.BinaryInteger
+  public static func >>= <Other>(lhs: inout DynamicSwiftSDK.BigInt, rhs: Other) where Other : Swift.BinaryInteger
+}
+extension DynamicSwiftSDK.BigUInt {
+  prefix public static func ~ (a: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+  public static func |= (a: inout DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt)
+  public static func &= (a: inout DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt)
+  public static func ^= (a: inout DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt)
+}
+extension DynamicSwiftSDK.BigInt {
+  prefix public static func ~ (x: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func & (lhs: inout DynamicSwiftSDK.BigInt, rhs: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func | (lhs: inout DynamicSwiftSDK.BigInt, rhs: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func ^ (lhs: inout DynamicSwiftSDK.BigInt, rhs: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func &= (lhs: inout DynamicSwiftSDK.BigInt, rhs: DynamicSwiftSDK.BigInt)
+  public static func |= (lhs: inout DynamicSwiftSDK.BigInt, rhs: DynamicSwiftSDK.BigInt)
+  public static func ^= (lhs: inout DynamicSwiftSDK.BigInt, rhs: DynamicSwiftSDK.BigInt)
+}
+extension DynamicSwiftSDK.BigUInt {
+  public subscript(bitAt index: Swift.Int) -> Swift.Bool {
+    get
+    set
+  }
+}
+extension DynamicSwiftSDK.BigUInt {
+  public var bitWidth: Swift.Int {
+    get
+  }
+  public var leadingZeroBitCount: Swift.Int {
+    get
+  }
+  public var trailingZeroBitCount: Swift.Int {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigInt {
+  public var bitWidth: Swift.Int {
+    get
+  }
+  public var trailingZeroBitCount: Swift.Int {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigUInt {
+  public struct Words : Swift.RandomAccessCollection {
+    public var startIndex: Swift.Int {
+      get
+    }
+    public var endIndex: Swift.Int {
+      get
+    }
+    public subscript(index: Swift.Int) -> DynamicSwiftSDK.BigUInt.Word {
+      get
+    }
+    public typealias Element = DynamicSwiftSDK.BigUInt.Word
+    public typealias Index = Swift.Int
+    public typealias Indices = Swift.Range<Swift.Int>
+    public typealias Iterator = Swift.IndexingIterator<DynamicSwiftSDK.BigUInt.Words>
+    public typealias SubSequence = Swift.Slice<DynamicSwiftSDK.BigUInt.Words>
+  }
+  public var words: DynamicSwiftSDK.BigUInt.Words {
+    get
+  }
+  public init<Words>(words: Words) where Words : Swift.Sequence, Words.Element == Swift.UInt
+}
+extension DynamicSwiftSDK.BigInt {
+  public struct Words : Swift.RandomAccessCollection {
+    public typealias Indices = Swift.CountableRange<Swift.Int>
+    public var count: Swift.Int {
+      get
+    }
+    public var indices: DynamicSwiftSDK.BigInt.Words.Indices {
+      get
+    }
+    public var startIndex: Swift.Int {
+      get
+    }
+    public var endIndex: Swift.Int {
+      get
+    }
+    public subscript(index: Swift.Int) -> Swift.UInt {
+      get
+    }
+    public typealias Element = Swift.UInt
+    public typealias Index = Swift.Int
+    public typealias Iterator = Swift.IndexingIterator<DynamicSwiftSDK.BigInt.Words>
+    public typealias SubSequence = Swift.Slice<DynamicSwiftSDK.BigInt.Words>
+  }
+  public var words: DynamicSwiftSDK.BigInt.Words {
+    get
+  }
+  public init<S>(words: S) where S : Swift.Sequence, S.Element == Swift.UInt
+}
+public struct BigInt : Swift.SignedInteger, Swift.Sendable {
+  public enum Sign : Swift.Sendable {
+    case plus
+    case minus
+    public static func == (a: DynamicSwiftSDK.BigInt.Sign, b: DynamicSwiftSDK.BigInt.Sign) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public typealias Magnitude = DynamicSwiftSDK.BigUInt
+  public typealias Word = DynamicSwiftSDK.BigUInt.Word
+  public static var isSigned: Swift.Bool {
+    get
+  }
+  public var magnitude: DynamicSwiftSDK.BigUInt
+  public var sign: DynamicSwiftSDK.BigInt.Sign
+  public init(sign: DynamicSwiftSDK.BigInt.Sign, magnitude: DynamicSwiftSDK.BigUInt)
+  public var isZero: Swift.Bool {
+    get
+  }
+  public func signum() -> DynamicSwiftSDK.BigInt
+}
+public struct BigUInt : Swift.UnsignedInteger, Swift.Sendable {
+  public typealias Word = Swift.UInt
+  public init()
+  public init(words: [DynamicSwiftSDK.BigUInt.Word])
+  public typealias Magnitude = DynamicSwiftSDK.BigUInt
+}
+extension DynamicSwiftSDK.BigUInt {
+  public static var isSigned: Swift.Bool {
+    get
+  }
+  public var isZero: Swift.Bool {
+    get
+  }
+  public func signum() -> DynamicSwiftSDK.BigUInt
+}
+extension DynamicSwiftSDK.BigUInt {
+  public func greatestCommonDivisor(with b: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+  public func inverse(_ modulus: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt?
+}
+extension DynamicSwiftSDK.BigInt {
+  public func greatestCommonDivisor(with b: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public func inverse(_ modulus: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt?
+}
+extension DynamicSwiftSDK.BigUInt {
+  public static func randomInteger<RNG>(withMaximumWidth width: Swift.Int, using generator: inout RNG) -> DynamicSwiftSDK.BigUInt where RNG : Swift.RandomNumberGenerator
+  public static func randomInteger(withMaximumWidth width: Swift.Int) -> DynamicSwiftSDK.BigUInt
+  public static func randomInteger<RNG>(withExactWidth width: Swift.Int, using generator: inout RNG) -> DynamicSwiftSDK.BigUInt where RNG : Swift.RandomNumberGenerator
+  public static func randomInteger(withExactWidth width: Swift.Int) -> DynamicSwiftSDK.BigUInt
+  public static func randomInteger<RNG>(lessThan limit: DynamicSwiftSDK.BigUInt, using generator: inout RNG) -> DynamicSwiftSDK.BigUInt where RNG : Swift.RandomNumberGenerator
+  public static func randomInteger(lessThan limit: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+}
+extension DynamicSwiftSDK.BigInt : Swift.Codable {
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+extension DynamicSwiftSDK.BigUInt : Swift.Codable {
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public func getWalletIdFromAddress(client: DynamicSwiftSDK.DynamicClient, address: Swift.String) -> Swift.String?
+public struct DynamicCore {
+}
+@_Concurrency.MainActor public func recoverEncryptedBackupByWallet(client: DynamicSwiftSDK.DynamicClient, walletId: Swift.String, keyShareIds: [DynamicSwiftSDK.Uuid], address: Swift.String) async throws -> DynamicSwiftSDK.RecoverKeyshareResponse
+@_Concurrency.MainActor public func presentSafariAuth(url: Foundation.URL, callbackUrlScheme: Swift.String, onDismiss: @escaping () -> Swift.Void, onCallback: @escaping (Foundation.URL) -> Swift.Void) throws
+@_Concurrency.MainActor public func dismissSafariAuth()
+public struct BaseError : Swift.Error {
+  public let name: Swift.String
+  public let shortMessage: Swift.String
+  public let cause: (any Swift.Error)?
+  public let docsURL: Foundation.URL?
+  public init(name: Swift.String = "BaseError", shortMessage: Swift.String, cause: (any Swift.Error)? = nil, docsURL: Foundation.URL? = nil)
+}
+public func sign(client: DynamicSwiftSDK.DynamicClient, accountAddress: Swift.String, message: Swift.String) async throws -> Swift.String
+public struct DynamicCoreConfig {
+  public var apiBaseUrl: Swift.String?
+  public var keyshareUrl: Swift.String?
+  public init(apiBaseUrl: Swift.String? = nil, keyshareUrl: Swift.String? = nil)
+}
+public typealias ProjectSettings = DynamicSwiftSDK.Components.Schemas.ProjectSettings
+public typealias SdkUser = DynamicSwiftSDK.Components.Schemas.SdkUser
+public typealias ChainEnum = DynamicSwiftSDK.Components.Schemas.ChainEnum
+public typealias Currency = DynamicSwiftSDK.Components.Schemas.Currency
+public typealias NativeCurrency = DynamicSwiftSDK.Components.Schemas.NativeCurrency
+public typealias JwtVerifiedCredential = DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential
+public typealias NetworkConfigurationResponse = DynamicSwiftSDK.Components.Schemas.NetworkConfigurationResponse
+public typealias Provider = DynamicSwiftSDK.Components.Schemas.Provider
+public typealias ProviderType = DynamicSwiftSDK.Components.Schemas.ProviderEnum
+public typealias WalletKeyshares = DynamicSwiftSDK.Components.Schemas.WalletKeyShareInfo
+public typealias Uuid = DynamicSwiftSDK.Components.Schemas.Uuid
+public typealias KeyshareLocations = DynamicSwiftSDK.Components.Schemas.WaasBackupOptionsEnum
+public typealias RecoverKeyshareResponse = DynamicSwiftSDK.Components.Schemas.RecoverMultipleClientKeySharesResponse
+@_Concurrency.MainActor public func sendSmsOtp(client: DynamicSwiftSDK.DynamicClient, phoneNumber: Swift.String, phoneCountryCode: Swift.String, isoCountryCode: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
+public struct WalletAccount {
+  public let walletId: Swift.String
+  public let accountAddress: Swift.String
+}
+public struct DynamicCoreState {
+  public enum InitStatus {
+    case uninitialized
+    case inProgress
+    case finished
+    case failed
+    public static func == (a: DynamicSwiftSDK.DynamicCoreState.InitStatus, b: DynamicSwiftSDK.DynamicCoreState.InitStatus) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var initStatus: DynamicSwiftSDK.DynamicCoreState.InitStatus
+  public var loaded: Swift.Bool
+  public var token: Swift.String?
+  public var walletAccounts: [DynamicSwiftSDK.WalletAccount]
+  public var isLoggedIn: Swift.Bool
+}
+public func verifySmsOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
+public struct DynamicLogger {
+}
+public struct Logger {
+}
+public func getCore(client: DynamicSwiftSDK.DynamicClient) -> DynamicSwiftSDK.DynamicCore
+@_Concurrency.MainActor public func initializeClient(client: DynamicSwiftSDK.DynamicClient) async throws
+public func bindSessionState(_ state: DynamicSwiftSDK.DynamicSessionState, to client: DynamicSwiftSDK.DynamicClient)
+public func createDynamicClient(config: DynamicSwiftSDK.DynamicClientConfig) -> DynamicSwiftSDK.DynamicClient
+final public class DynamicSessionState : Foundation.ObservableObject {
+  @Combine.Published @_projectedValueProperty($isLoggedIn) final public var isLoggedIn: Swift.Bool {
+    get
+  }
+  final public var $isLoggedIn: Combine.Published<Swift.Bool>.Publisher {
+    get
+  }
+  @Combine.Published @_projectedValueProperty($isInitialized) final public var isInitialized: Swift.Bool {
+    get
+  }
+  final public var $isInitialized: Combine.Published<Swift.Bool>.Publisher {
+    get
+  }
+  public init()
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
+public func randomURLSafeString(length: Swift.Int) -> Swift.String
+public func generateOAuthState() -> Swift.String
+public struct DynamicClient {
+  public init(core: DynamicSwiftSDK.DynamicCore)
+  public var initStatus: DynamicSwiftSDK.DynamicCoreState.InitStatus {
+    get
+  }
+  public var projectSettings: DynamicSwiftSDK.ProjectSettings? {
+    get
+  }
+  public var token: Swift.String? {
+    get
+  }
+  public var user: DynamicSwiftSDK.SdkUser? {
+    get
+  }
+  public var walletAccounts: [DynamicSwiftSDK.WalletAccount] {
+    get
+  }
+  public var isLoggedIn: Swift.Bool? {
+    get
+  }
+  public var clientSessionKey: DynamicSwiftSDK.ClientSessionKey? {
+    get
+  }
+}
+extension DynamicSwiftSDK.DynamicClient : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+public enum ProjectSettingsError : Swift.Error {
+  case badRequest(Swift.String)
+  case unprocessable(Swift.String)
+  case serverError(Swift.String)
+  case unexpectedStatus(Swift.Int)
+}
+public func fetchProjectSettings(client: DynamicSwiftSDK.DynamicClient) async throws -> DynamicSwiftSDK.ProjectSettings
+public struct DynamicClientConfig {
+  public let environmentId: Swift.String
+  public let coreConfig: DynamicSwiftSDK.DynamicCoreConfig?
+  public init(environmentId: Swift.String, coreConfig: DynamicSwiftSDK.DynamicCoreConfig? = nil)
+}
+public func refreshUserFromToken(client: DynamicSwiftSDK.DynamicClient) async throws -> DynamicSwiftSDK.SdkUser
+public func loadKeyShares(client: DynamicSwiftSDK.DynamicClient, accountAddress: Swift.String) -> [Swift.String]?
+public struct JWK : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct SessionKeys : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct P256KeyPair {
+}
+public struct ClientSessionKey : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public func buf2hex(_ buffer: Foundation.Data) -> Swift.String
+public func base64urlDecode(_ s: Swift.String?) -> Foundation.Data?
+public func compressRawPublicKey(_ rawPublicKey: Foundation.Data) -> Foundation.Data
+public func toEncodedFormat(publicKey: Swift.String, privateKey: Swift.String, privateKeyJwk: DynamicSwiftSDK.JWK, registered: Swift.Bool, expirationDate: Foundation.Date? = nil) -> Swift.String
+public func p256Keygen() -> DynamicSwiftSDK.P256KeyPair
+public func p256Sign(privateKeyJwk: DynamicSwiftSDK.JWK, message: Swift.String) -> Swift.String
+public func generateClientSessionKey() -> DynamicSwiftSDK.ClientSessionKey
+public func generateSessionSignature(privateKeyJwk: DynamicSwiftSDK.JWK, sessionId: Swift.String) -> Swift.String
+public func generateSessionSignature(privateKeyData: Foundation.Data, sessionId: Swift.String) -> Swift.String
+@_Concurrency.MainActor public func getEnabledSocialProviders(client: DynamicSwiftSDK.DynamicClient) async throws -> [DynamicSwiftSDK.Provider]
+@_Concurrency.MainActor public func sendEmailOtp(client: DynamicSwiftSDK.DynamicClient, email: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
+public struct OTPVerification {
+  public let email: Swift.String?
+  public let phoneNumber: Swift.String?
+  public let phoneCountryCode: Swift.String?
+  public let isoCountryCode: Swift.String?
+  public let verificationUUID: Swift.String
+}
+public func subscribeToSelector<Slice>(_ client: DynamicSwiftSDK.DynamicClient, selector: @escaping (DynamicSwiftSDK.DynamicCoreState) -> Slice, onChange: @escaping (Slice) -> Swift.Void) -> () -> Swift.Void where Slice : Swift.Equatable
+public func verifyOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
+extension Swift.Array where Element == DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential {
+  public func sortedByLastSelected() -> [DynamicSwiftSDK.JwtVerifiedCredential]
+}
+public func waitForInit(client: DynamicSwiftSDK.DynamicClient) async throws
+@_Concurrency.MainActor public func createWalletAccount(client: DynamicSwiftSDK.DynamicClient) async throws -> Swift.String
+@_Concurrency.MainActor public func logout(client: DynamicSwiftSDK.DynamicClient) async throws
+@_Concurrency.MainActor public func socialLogin(client: DynamicSwiftSDK.DynamicClient, with provider: DynamicSwiftSDK.ProviderType, deepLinkUrl: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
+extension DynamicSwiftSDK.BigUInt {
+  public init(_ buffer: Swift.UnsafeRawBufferPointer)
+  public func serializeToBuffer() -> Swift.UnsafeRawBufferPointer
+  public init(_ data: Foundation.Data)
+  public func serialize() -> Foundation.Data
+}
+extension DynamicSwiftSDK.BigInt {
+  public init(_ buffer: Swift.UnsafeRawBufferPointer)
+  public func serializeToBuffer() -> Swift.UnsafeRawBufferPointer
+  public init(_ data: Foundation.Data)
+  public func serialize() -> Foundation.Data
+}
+extension DynamicSwiftSDK.BigUInt : Swift.Hashable {
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigInt : Swift.Hashable {
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigUInt {
+  public func isStrongProbablePrime(_ base: DynamicSwiftSDK.BigUInt) -> Swift.Bool
+  public func isPrime(rounds: Swift.Int = 10) -> Swift.Bool
+}
+extension DynamicSwiftSDK.BigInt {
+  public func isStrongProbablePrime(_ base: DynamicSwiftSDK.BigInt) -> Swift.Bool
+  public func isPrime(rounds: Swift.Int = 10) -> Swift.Bool
+}
+public func deriveEthereumAccountAddress(from rawPublicKey: Foundation.Data) -> (address: Swift.String, pubkeyHex: Swift.String)
+extension DynamicSwiftSDK.BigUInt {
+  public mutating func subtractReportingOverflow(_ b: DynamicSwiftSDK.BigUInt, shiftedBy shift: Swift.Int = 0) -> Swift.Bool
+  public func subtractingReportingOverflow(_ other: DynamicSwiftSDK.BigUInt, shiftedBy shift: Swift.Int) -> (partialValue: DynamicSwiftSDK.BigUInt, overflow: Swift.Bool)
+  public func subtractingReportingOverflow(_ other: DynamicSwiftSDK.BigUInt) -> (partialValue: DynamicSwiftSDK.BigUInt, overflow: Swift.Bool)
+  public mutating func subtract(_ other: DynamicSwiftSDK.BigUInt, shiftedBy shift: Swift.Int = 0)
+  public func subtracting(_ other: DynamicSwiftSDK.BigUInt, shiftedBy shift: Swift.Int = 0) -> DynamicSwiftSDK.BigUInt
+  public mutating func decrement(shiftedBy shift: Swift.Int = 0)
+  public static func - (a: DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
+  public static func -= (a: inout DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt)
+}
+extension DynamicSwiftSDK.BigInt {
+  public mutating func negate()
+  public static func - (a: DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt
+  public static func -= (a: inout DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt)
+}
+public enum Environment {
+  public static var baseURL: Swift.String {
+    get
+  }
+  public static var relayHost: Swift.String {
+    get
+  }
+  public static var keyshareURL: Swift.String {
+    get
+  }
+}
+extension DynamicSwiftSDK.BigUInt {
+  public func squareRoot() -> DynamicSwiftSDK.BigUInt
+}
+extension DynamicSwiftSDK.BigInt {
+  public func squareRoot() -> DynamicSwiftSDK.BigInt
+}
+extension DynamicSwiftSDK.BigUInt : Swift.Comparable {
+  public static func compare(_ a: DynamicSwiftSDK.BigUInt, _ b: DynamicSwiftSDK.BigUInt) -> Foundation.ComparisonResult
+  public static func == (a: DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt) -> Swift.Bool
+  public static func < (a: DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt) -> Swift.Bool
+}
+extension DynamicSwiftSDK.BigInt : Swift.Comparable {
+  public static func == (a: DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt) -> Swift.Bool
+  public static func < (a: DynamicSwiftSDK.BigInt, b: DynamicSwiftSDK.BigInt) -> Swift.Bool
+}
+extension DynamicSwiftSDK.BigUInt : Swift.Strideable {
+  public typealias Stride = DynamicSwiftSDK.BigInt
+  public func advanced(by n: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigUInt
+  public func distance(to other: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigInt
+}
+extension DynamicSwiftSDK.BigInt : Swift.Strideable {
+  public typealias Stride = DynamicSwiftSDK.BigInt
+  public func advanced(by n: DynamicSwiftSDK.BigInt.Stride) -> DynamicSwiftSDK.BigInt
+  public func distance(to other: DynamicSwiftSDK.BigInt) -> DynamicSwiftSDK.BigInt.Stride
+}
+extension DynamicSwiftSDK.BigUInt {
+  public init?<T>(exactly source: T) where T : Swift.BinaryInteger
+  public init<T>(_ source: T) where T : Swift.BinaryInteger
+  public init<T>(truncatingIfNeeded source: T) where T : Swift.BinaryInteger
+  public init<T>(clamping source: T) where T : Swift.BinaryInteger
+}
+extension DynamicSwiftSDK.BigInt {
+  public init()
+  public init(_ integer: DynamicSwiftSDK.BigUInt)
+  public init<T>(_ source: T) where T : Swift.BinaryInteger
+  public init?<T>(exactly source: T) where T : Swift.BinaryInteger
+  public init<T>(clamping source: T) where T : Swift.BinaryInteger
+  public init<T>(truncatingIfNeeded source: T) where T : Swift.BinaryInteger
+}
+extension DynamicSwiftSDK.BigUInt : Swift.ExpressibleByIntegerLiteral {
+  public init(integerLiteral value: Swift.UInt64)
+  public typealias IntegerLiteralType = Swift.UInt64
+}
+extension DynamicSwiftSDK.BigInt : Swift.ExpressibleByIntegerLiteral {
+  public init(integerLiteral value: Swift.Int64)
+  public typealias IntegerLiteralType = Swift.Int64
 }
 public enum ABIError : Swift.Error {
   case invalidSignature
@@ -1196,7 +1638,6 @@ public struct OffchainLookup : DynamicSwiftSDK.ABIRevertError {
   public func encode(to encoder: DynamicSwiftSDK.ABIFunctionEncoder) throws
   public init(address: DynamicSwiftSDK.EthereumAddress, urls: [Swift.String], callData: Foundation.Data, callbackFunction: Foundation.Data, extraData: Foundation.Data)
 }
-public func deriveEthereumAccountAddress(from rawPublicKey: Foundation.Data) -> (address: Swift.String, pubkeyHex: Swift.String)
 public protocol ABITupleDecodable {
   static var types: [any DynamicSwiftSDK.ABIType.Type] { get }
   init?(data: Swift.String) throws
@@ -1291,10 +1732,12 @@ public struct EthereumWallet {
 }
 extension DynamicSwiftSDK.EthereumWallet {
   @_Concurrency.MainActor public func getNetworkClient(for chainId: Swift.Int) async throws -> DynamicSwiftSDK.BaseEthereumClient
-  public func switchNetwork(to network: DynamicSwiftSDK.EvmNetwork) async throws
+  @_Concurrency.MainActor public func switchNetwork(to network: DynamicSwiftSDK.EvmNetwork) async throws
 }
 extension DynamicSwiftSDK.EthereumWallet {
-  public func getBalanceString() async throws -> Swift.String
+  @_Concurrency.MainActor public func getBalanceString() async throws -> Swift.String
+  @_Concurrency.MainActor public func getBalance(_ block: DynamicSwiftSDK.EthereumBlock?) async throws -> DynamicSwiftSDK.BigUInt
+  @_Concurrency.MainActor public func sendTransaction(_ transaction: DynamicSwiftSDK.EthereumTransaction) async throws -> Swift.String
 }
 extension DynamicSwiftSDK.EthereumWallet : Swift.Equatable {
   public static func == (lhs: DynamicSwiftSDK.EthereumWallet, rhs: DynamicSwiftSDK.EthereumWallet) -> Swift.Bool
@@ -1317,14 +1760,6 @@ extension DynamicSwiftSDK.EthereumWallet {
   public func sign(hex: Swift.String) throws -> Foundation.Data
   public func signMessage(message: Foundation.Data) throws -> Swift.String
   public func signMessage(message: DynamicSwiftSDK.TypedData) throws -> Swift.String
-}
-public enum Environment {
-  public static var baseURL: Swift.String {
-    get
-  }
-  public static var relayHost: Swift.String {
-    get
-  }
 }
 public enum ChainName : Swift.String, Swift.Codable, Swift.Hashable, Swift.Sendable, Swift.CaseIterable {
   case evm
@@ -1371,6 +1806,13 @@ public enum VerifiedCredentialName : Swift.String, Swift.Codable, Swift.Hashable
 }
 extension DynamicSwiftSDK.ChainName {
   public static func fromVerifiedCredentialName(name: DynamicSwiftSDK.VerifiedCredentialName) -> DynamicSwiftSDK.ChainName?
+}
+public typealias HexString = Swift.String
+extension Foundation.Data {
+  public func toHexString(shouldPrefix: Swift.Bool = true) -> DynamicSwiftSDK.HexString
+}
+extension Swift.String {
+  public func toHexData() throws -> Foundation.Data
 }
 public struct Client : DynamicSwiftSDK.APIProtocol {
   public init(serverURL: Foundation.URL, configuration: OpenAPIRuntime.Configuration = .init(), transport: any OpenAPIRuntime.ClientTransport, middlewares: [any OpenAPIRuntime.ClientMiddleware] = [])
@@ -1562,6 +2004,8 @@ public struct Client : DynamicSwiftSDK.APIProtocol {
   public func backupKeySharesOptions(_ input: DynamicSwiftSDK.Operations.BackupKeySharesOptions.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesOptions.Output
   public func backupKeySharesToGoogleDrive(_ input: DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDrive.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDrive.Output
   public func backupKeySharesToGoogleDriveOptions(_ input: DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDriveOptions.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDriveOptions.Output
+  public func backupKeySharesToLocation(_ input: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output
+  public func backupKeySharesToLocationOptions(_ input: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output
   public func recoverKeyShares(_ input: DynamicSwiftSDK.Operations.RecoverKeyShares.Input) async throws -> DynamicSwiftSDK.Operations.RecoverKeyShares.Output
   public func recoverKeySharesOptions(_ input: DynamicSwiftSDK.Operations.RecoverKeySharesOptions.Input) async throws -> DynamicSwiftSDK.Operations.RecoverKeySharesOptions.Output
   public func reshare(_ input: DynamicSwiftSDK.Operations.Reshare.Input) async throws -> DynamicSwiftSDK.Operations.Reshare.Output
@@ -1760,6 +2204,8 @@ public protocol APIProtocol : Swift.Sendable {
   func backupKeySharesOptions(_ input: DynamicSwiftSDK.Operations.BackupKeySharesOptions.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesOptions.Output
   func backupKeySharesToGoogleDrive(_ input: DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDrive.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDrive.Output
   func backupKeySharesToGoogleDriveOptions(_ input: DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDriveOptions.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDriveOptions.Output
+  func backupKeySharesToLocation(_ input: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output
+  func backupKeySharesToLocationOptions(_ input: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output
   func recoverKeyShares(_ input: DynamicSwiftSDK.Operations.RecoverKeyShares.Input) async throws -> DynamicSwiftSDK.Operations.RecoverKeyShares.Output
   func recoverKeySharesOptions(_ input: DynamicSwiftSDK.Operations.RecoverKeySharesOptions.Input) async throws -> DynamicSwiftSDK.Operations.RecoverKeySharesOptions.Output
   func reshare(_ input: DynamicSwiftSDK.Operations.Reshare.Input) async throws -> DynamicSwiftSDK.Operations.Reshare.Output
@@ -1958,6 +2404,8 @@ extension DynamicSwiftSDK.APIProtocol {
   public func backupKeySharesOptions(path: DynamicSwiftSDK.Operations.BackupKeySharesOptions.Input.Path, headers: DynamicSwiftSDK.Operations.BackupKeySharesOptions.Input.Headers = .init()) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesOptions.Output
   public func backupKeySharesToGoogleDrive(path: DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDrive.Input.Path, headers: DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDrive.Input.Headers = .init()) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDrive.Output
   public func backupKeySharesToGoogleDriveOptions(path: DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDriveOptions.Input.Path, headers: DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDriveOptions.Input.Headers = .init()) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToGoogleDriveOptions.Output
+  public func backupKeySharesToLocation(path: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Path, headers: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Headers = .init(), body: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Body) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output
+  public func backupKeySharesToLocationOptions(path: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Path, headers: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Headers = .init()) async throws -> DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output
   public func recoverKeyShares(path: DynamicSwiftSDK.Operations.RecoverKeyShares.Input.Path, headers: DynamicSwiftSDK.Operations.RecoverKeyShares.Input.Headers = .init(), body: DynamicSwiftSDK.Operations.RecoverKeyShares.Input.Body? = nil) async throws -> DynamicSwiftSDK.Operations.RecoverKeyShares.Output
   public func recoverKeySharesOptions(path: DynamicSwiftSDK.Operations.RecoverKeySharesOptions.Input.Path, headers: DynamicSwiftSDK.Operations.RecoverKeySharesOptions.Input.Headers = .init()) async throws -> DynamicSwiftSDK.Operations.RecoverKeySharesOptions.Output
   public func reshare(path: DynamicSwiftSDK.Operations.Reshare.Input.Path, headers: DynamicSwiftSDK.Operations.Reshare.Input.Headers = .init(), body: DynamicSwiftSDK.Operations.Reshare.Input.Body) async throws -> DynamicSwiftSDK.Operations.Reshare.Output
@@ -6815,6 +7263,7 @@ public enum Components {
     @frozen public enum WaasBackupOptionsEnum : Swift.String, Swift.Codable, Swift.Hashable, Swift.Sendable, Swift.CaseIterable {
       case googleDrive
       case icloud
+      case dynamic
       public init?(rawValue: Swift.String)
       public typealias AllCases = [DynamicSwiftSDK.Components.Schemas.WaasBackupOptionsEnum]
       public typealias RawValue = Swift.String
@@ -10297,6 +10746,64 @@ public enum Components {
         }
       }
       public static func == (a: DynamicSwiftSDK.Components.Schemas.BackupMultipleClientKeySharesResponse, b: DynamicSwiftSDK.Components.Schemas.BackupMultipleClientKeySharesResponse) -> Swift.Bool
+      public func encode(to encoder: any Swift.Encoder) throws
+      public func hash(into hasher: inout Swift.Hasher)
+      public var hashValue: Swift.Int {
+        get
+      }
+      public init(from decoder: any Swift.Decoder) throws
+    }
+    public struct BackupKeySharesToLocationRequest : Swift.Codable, Swift.Hashable, Swift.Sendable {
+      public var location: DynamicSwiftSDK.Components.Schemas.WaasBackupOptionsEnum
+      public init(location: DynamicSwiftSDK.Components.Schemas.WaasBackupOptionsEnum)
+      public enum CodingKeys : Swift.String, Swift.CodingKey {
+        case location
+        public init?(rawValue: Swift.String)
+        public init?(stringValue: Swift.String)
+        public init?(intValue: Swift.Int)
+        public typealias RawValue = Swift.String
+        public var intValue: Swift.Int? {
+          get
+        }
+        public var rawValue: Swift.String {
+          get
+        }
+        public var stringValue: Swift.String {
+          get
+        }
+      }
+      public static func == (a: DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationRequest, b: DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationRequest) -> Swift.Bool
+      public func encode(to encoder: any Swift.Encoder) throws
+      public func hash(into hasher: inout Swift.Hasher)
+      public var hashValue: Swift.Int {
+        get
+      }
+      public init(from decoder: any Swift.Decoder) throws
+    }
+    public struct BackupKeySharesToLocationResponse : Swift.Codable, Swift.Hashable, Swift.Sendable {
+      public var message: Swift.String
+      public var walletId: DynamicSwiftSDK.Components.Schemas.Uuid
+      public var location: DynamicSwiftSDK.Components.Schemas.WaasBackupOptionsEnum
+      public init(message: Swift.String, walletId: DynamicSwiftSDK.Components.Schemas.Uuid, location: DynamicSwiftSDK.Components.Schemas.WaasBackupOptionsEnum)
+      public enum CodingKeys : Swift.String, Swift.CodingKey {
+        case message
+        case walletId
+        case location
+        public init?(rawValue: Swift.String)
+        public init?(stringValue: Swift.String)
+        public init?(intValue: Swift.Int)
+        public typealias RawValue = Swift.String
+        public var intValue: Swift.Int? {
+          get
+        }
+        public var rawValue: Swift.String {
+          get
+        }
+        public var stringValue: Swift.String {
+          get
+        }
+      }
+      public static func == (a: DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationResponse, b: DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationResponse) -> Swift.Bool
       public func encode(to encoder: any Swift.Encoder) throws
       public func hash(into hasher: inout Swift.Hasher)
       public var hashValue: Swift.Int {
@@ -26848,6 +27355,184 @@ public enum Operations {
       public typealias RawValue = Swift.String
     }
   }
+  public enum BackupKeySharesToLocation {
+    public static let id: Swift.String
+    public struct Input : Swift.Sendable, Swift.Hashable {
+      public struct Path : Swift.Sendable, Swift.Hashable {
+        public var environmentId: DynamicSwiftSDK.Components.Parameters.EnvironmentId
+        public var walletId: DynamicSwiftSDK.Components.Parameters.WalletId
+        public init(environmentId: DynamicSwiftSDK.Components.Parameters.EnvironmentId, walletId: DynamicSwiftSDK.Components.Parameters.WalletId)
+        public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Path, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Path) -> Swift.Bool
+        public func hash(into hasher: inout Swift.Hasher)
+        public var hashValue: Swift.Int {
+          get
+        }
+      }
+      public var path: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Path
+      public struct Headers : Swift.Sendable, Swift.Hashable {
+        public var accept: [OpenAPIRuntime.AcceptHeaderContentType<DynamicSwiftSDK.Operations.BackupKeySharesToLocation.AcceptableContentType>]
+        public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<DynamicSwiftSDK.Operations.BackupKeySharesToLocation.AcceptableContentType>] = .defaultValues())
+        public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Headers, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Headers) -> Swift.Bool
+        public func hash(into hasher: inout Swift.Hasher)
+        public var hashValue: Swift.Int {
+          get
+        }
+      }
+      public var headers: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Headers
+      @frozen public enum Body : Swift.Sendable, Swift.Hashable {
+        case json(DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationRequest)
+        public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Body, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Body) -> Swift.Bool
+        public func hash(into hasher: inout Swift.Hasher)
+        public var hashValue: Swift.Int {
+          get
+        }
+      }
+      public var body: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Body
+      public init(path: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Path, headers: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Headers = .init(), body: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input.Body)
+      public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Input) -> Swift.Bool
+      public func hash(into hasher: inout Swift.Hasher)
+      public var hashValue: Swift.Int {
+        get
+      }
+    }
+    @frozen public enum Output : Swift.Sendable, Swift.Hashable {
+      public struct Created : Swift.Sendable, Swift.Hashable {
+        @frozen public enum Body : Swift.Sendable, Swift.Hashable {
+          case json(DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationResponse)
+          public var json: DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationResponse {
+            get throws
+          }
+          public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output.Created.Body, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output.Created.Body) -> Swift.Bool
+          public func hash(into hasher: inout Swift.Hasher)
+          public var hashValue: Swift.Int {
+            get
+          }
+        }
+        public var body: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output.Created.Body
+        public init(body: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output.Created.Body)
+        public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output.Created, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output.Created) -> Swift.Bool
+        public func hash(into hasher: inout Swift.Hasher)
+        public var hashValue: Swift.Int {
+          get
+        }
+      }
+      case created(DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output.Created)
+      public var created: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output.Created {
+        get throws
+      }
+      case badRequest(DynamicSwiftSDK.Components.Responses.BadRequest)
+      public var badRequest: DynamicSwiftSDK.Components.Responses.BadRequest {
+        get throws
+      }
+      case unauthorized(DynamicSwiftSDK.Components.Responses.Unauthorized)
+      public var unauthorized: DynamicSwiftSDK.Components.Responses.Unauthorized {
+        get throws
+      }
+      case notFound(DynamicSwiftSDK.Components.Responses.NotFound)
+      public var notFound: DynamicSwiftSDK.Components.Responses.NotFound {
+        get throws
+      }
+      case internalServerError(DynamicSwiftSDK.Components.Responses.InternalServerError)
+      public var internalServerError: DynamicSwiftSDK.Components.Responses.InternalServerError {
+        get throws
+      }
+      case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+      public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocation.Output) -> Swift.Bool
+      public func hash(into hasher: inout Swift.Hasher)
+      public var hashValue: Swift.Int {
+        get
+      }
+    }
+    @frozen public enum AcceptableContentType : OpenAPIRuntime.AcceptableProtocol {
+      case json
+      case other(Swift.String)
+      public init?(rawValue: Swift.String)
+      public var rawValue: Swift.String {
+        get
+      }
+      public static var allCases: [DynamicSwiftSDK.Operations.BackupKeySharesToLocation.AcceptableContentType] {
+        get
+      }
+      public typealias AllCases = [DynamicSwiftSDK.Operations.BackupKeySharesToLocation.AcceptableContentType]
+      public typealias RawValue = Swift.String
+    }
+  }
+  public enum BackupKeySharesToLocationOptions {
+    public static let id: Swift.String
+    public struct Input : Swift.Sendable, Swift.Hashable {
+      public struct Path : Swift.Sendable, Swift.Hashable {
+        public var environmentId: DynamicSwiftSDK.Components.Parameters.EnvironmentId
+        public var walletId: DynamicSwiftSDK.Components.Parameters.WalletId
+        public init(environmentId: DynamicSwiftSDK.Components.Parameters.EnvironmentId, walletId: DynamicSwiftSDK.Components.Parameters.WalletId)
+        public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Path, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Path) -> Swift.Bool
+        public func hash(into hasher: inout Swift.Hasher)
+        public var hashValue: Swift.Int {
+          get
+        }
+      }
+      public var path: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Path
+      public struct Headers : Swift.Sendable, Swift.Hashable {
+        public var accept: [OpenAPIRuntime.AcceptHeaderContentType<DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.AcceptableContentType>]
+        public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.AcceptableContentType>] = .defaultValues())
+        public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Headers, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Headers) -> Swift.Bool
+        public func hash(into hasher: inout Swift.Hasher)
+        public var hashValue: Swift.Int {
+          get
+        }
+      }
+      public var headers: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Headers
+      public init(path: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Path, headers: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input.Headers = .init())
+      public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Input) -> Swift.Bool
+      public func hash(into hasher: inout Swift.Hasher)
+      public var hashValue: Swift.Int {
+        get
+      }
+    }
+    @frozen public enum Output : Swift.Sendable, Swift.Hashable {
+      public struct NoContent : Swift.Sendable, Swift.Hashable {
+        public init()
+        public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output.NoContent, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output.NoContent) -> Swift.Bool
+        public func hash(into hasher: inout Swift.Hasher)
+        public var hashValue: Swift.Int {
+          get
+        }
+      }
+      case noContent(DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output.NoContent)
+      public static var noContent: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output {
+        get
+      }
+      public var noContent: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output.NoContent {
+        get throws
+      }
+      case badRequest(DynamicSwiftSDK.Components.Responses.BadRequest)
+      public var badRequest: DynamicSwiftSDK.Components.Responses.BadRequest {
+        get throws
+      }
+      case unprocessableContent(DynamicSwiftSDK.Components.Responses.UnprocessableEntity)
+      public var unprocessableContent: DynamicSwiftSDK.Components.Responses.UnprocessableEntity {
+        get throws
+      }
+      case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+      public static func == (a: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output, b: DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.Output) -> Swift.Bool
+      public func hash(into hasher: inout Swift.Hasher)
+      public var hashValue: Swift.Int {
+        get
+      }
+    }
+    @frozen public enum AcceptableContentType : OpenAPIRuntime.AcceptableProtocol {
+      case json
+      case other(Swift.String)
+      public init?(rawValue: Swift.String)
+      public var rawValue: Swift.String {
+        get
+      }
+      public static var allCases: [DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.AcceptableContentType] {
+        get
+      }
+      public typealias AllCases = [DynamicSwiftSDK.Operations.BackupKeySharesToLocationOptions.AcceptableContentType]
+      public typealias RawValue = Swift.String
+    }
+  }
   public enum RecoverKeyShares {
     public static let id: Swift.String
     public struct Input : Swift.Sendable, Swift.Hashable {
@@ -27505,16 +28190,18 @@ public enum Operations {
 }
 extension DynamicSwiftSDK.EthereumConnectorError : Swift.Equatable {}
 extension DynamicSwiftSDK.EthereumConnectorError : Swift.Hashable {}
-extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Equatable {}
-extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Hashable {}
-extension DynamicSwiftSDK.WalletError : Swift.Equatable {}
-extension DynamicSwiftSDK.WalletError : Swift.Hashable {}
 extension DynamicSwiftSDK.EthereumAccountError : Swift.Equatable {}
 extension DynamicSwiftSDK.EthereumAccountError : Swift.Hashable {}
+extension DynamicSwiftSDK.WalletError : Swift.Equatable {}
+extension DynamicSwiftSDK.WalletError : Swift.Hashable {}
 extension DynamicSwiftSDK.EthereumKeyStorageError : Swift.Equatable {}
 extension DynamicSwiftSDK.EthereumKeyStorageError : Swift.Hashable {}
 extension DynamicSwiftSDK.KeyUtilError : Swift.Equatable {}
 extension DynamicSwiftSDK.KeyUtilError : Swift.Hashable {}
+extension DynamicSwiftSDK.BigInt.Sign : Swift.Equatable {}
+extension DynamicSwiftSDK.BigInt.Sign : Swift.Hashable {}
+extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Equatable {}
+extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Hashable {}
 extension DynamicSwiftSDK.ABIError : Swift.Equatable {}
 extension DynamicSwiftSDK.ABIError : Swift.Hashable {}
 extension DynamicSwiftSDK.EthereumTransactionReceiptStatus : Swift.Equatable {}
@@ -28278,6 +28965,12 @@ extension DynamicSwiftSDK.Components.Schemas.BackupMultipleClientKeySharesReques
 extension DynamicSwiftSDK.Components.Schemas.BackupMultipleClientKeySharesResponse.CodingKeys : Swift.Equatable {}
 extension DynamicSwiftSDK.Components.Schemas.BackupMultipleClientKeySharesResponse.CodingKeys : Swift.Hashable {}
 extension DynamicSwiftSDK.Components.Schemas.BackupMultipleClientKeySharesResponse.CodingKeys : Swift.RawRepresentable {}
+extension DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationRequest.CodingKeys : Swift.Equatable {}
+extension DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationRequest.CodingKeys : Swift.Hashable {}
+extension DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationRequest.CodingKeys : Swift.RawRepresentable {}
+extension DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationResponse.CodingKeys : Swift.Equatable {}
+extension DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationResponse.CodingKeys : Swift.Hashable {}
+extension DynamicSwiftSDK.Components.Schemas.BackupKeySharesToLocationResponse.CodingKeys : Swift.RawRepresentable {}
 extension DynamicSwiftSDK.Components.Schemas.RecoverMultipleClientKeySharesRequest.CodingKeys : Swift.Equatable {}
 extension DynamicSwiftSDK.Components.Schemas.RecoverMultipleClientKeySharesRequest.CodingKeys : Swift.Hashable {}
 extension DynamicSwiftSDK.Components.Schemas.RecoverMultipleClientKeySharesRequest.CodingKeys : Swift.RawRepresentable {}

@@ -17,7 +17,6 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-http-types.git", exact: "1.4.0"),
         .package(url: "https://github.com/apple/swift-openapi-runtime.git", exact: "1.8.2"),
-        .package(url: "https://github.com/attaswift/BigInt", exact: "5.5.1"),
     ],
     targets: [
         .binaryTarget(
@@ -30,8 +29,6 @@ let package = Package(
                 "DynamicSwiftSDK",
                 .product(name: "HTTPTypes", package: "swift-http-types"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
-                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
-                .product(name: "BigInt", package: "BigInt"),
             ],
             swiftSettings: [
                 .unsafeFlags(["-enable-library-evolution"])

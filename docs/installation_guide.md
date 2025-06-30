@@ -15,7 +15,7 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/dynamic-labs/sdk-swift.git", from: "0.0.2")
+    .package(url: "https://github.com/dynamic-labs/sdk-swift.git", from: "0.0.3")
 ]
 ```
 
@@ -23,7 +23,7 @@ dependencies: [
 
 1. File → Add Package Dependencies
 2. Enter the repository URL: `https://github.com/dynamic-labs/sdk-swift.git`
-3. Select version `0.0.2` or `from: 0.0.2`
+3. Select version `0.0.3` or `from: 0.0.3`
 4. Add to your target
 
 ## Setup in App
@@ -38,8 +38,8 @@ Add the following environment variables to your app scheme:
 4. Under "Environment Variables", add:
 
 ```
-DYNAMIC_BASE_URL = https://app.dynamic.xyz/api/v0
-DYNAMIC_RELAY_HOST = relay.dynamic.xyz
+DYNAMIC_BASE_URL = https://app.dynamicauth.com/api/v0
+DYNAMIC_RELAY_HOST = relay.dynamicauth.com
 DYNAMIC_ENVIRONMENT_ID = <your_environment_id>
 ```
 
@@ -57,7 +57,6 @@ let config = DynamicClientConfig(
 )
 let newClient = createDynamicClient(config: config)
 ```
-
 
 ### Support
 

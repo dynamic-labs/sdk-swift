@@ -109,12 +109,6 @@ For detailed setup instructions, provider configuration, and implementation exam
 
 ## Authentication State Management
 
-The SDK automatically manages authentication state. After successful authentication:
-
-1. JWT tokens are stored securely
-2. User information is available through the SDK
-3. Authenticated requests can be made to Dynamic APIs
-
 ### Check Authentication Status
 
 ```swift
