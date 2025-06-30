@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		54A59E022E0F9BDE004E1B2A /* DynamicSwiftSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 54A59E012E0F9BDE004E1B2A /* DynamicSwiftSDK */; };
+		54243B222E1240AC00A284EE /* DynamicSwiftSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 54243B212E1240AC00A284EE /* DynamicSwiftSDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,7 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				54A59E022E0F9BDE004E1B2A /* DynamicSwiftSDK in Frameworks */,
+				54243B222E1240AC00A284EE /* DynamicSwiftSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +151,7 @@
 				546403C02E0923E100DB00AC /* DynamicSwiftSDK */,
 				546B876B2E0944BF00AF13A2 /* DynamicSwiftSDK */,
 				54A59E012E0F9BDE004E1B2A /* DynamicSwiftSDK */,
+				54243B212E1240AC00A284EE /* DynamicSwiftSDK */,
 			);
 			productName = ExampleApp;
 			productReference = 546FB9622DFCD4A90065193A /* ExampleApp.app */;
@@ -235,7 +236,7 @@
 			mainGroup = 546FB9592DFCD4A90065193A;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				54A59E002E0F9BDE004E1B2A /* XCLocalSwiftPackageReference "../../sdk-swift" */,
+				54243B202E1240AC00A284EE /* XCLocalSwiftPackageReference "../../sdk-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 546FB9632DFCD4A90065193A /* Products */;
@@ -613,7 +614,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		54A59E002E0F9BDE004E1B2A /* XCLocalSwiftPackageReference "../../sdk-swift" */ = {
+		54243B202E1240AC00A284EE /* XCLocalSwiftPackageReference "../../sdk-swift" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../../sdk-swift";
 		};
@@ -621,6 +622,10 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		541AD7A02E0466EA0036E72D /* DynamicSwiftSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DynamicSwiftSDK;
+		};
+		54243B212E1240AC00A284EE /* DynamicSwiftSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DynamicSwiftSDK;
 		};

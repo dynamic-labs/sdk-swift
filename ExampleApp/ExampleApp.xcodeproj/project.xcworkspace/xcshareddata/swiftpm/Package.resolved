@@ -2,15 +2,6 @@
   "originHash" : "c0bf84d56432587269f461c714f3a02f5f783682198d2707b2c15831b887ce10",
   "pins" : [
     {
-      "identity" : "bigint",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/lazerfocused/BigInt.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "059d53164752d9b24a6a04783caca2c4cbe13a16"
-      }
-    },
-    {
       "identity" : "swift-http-types",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-http-types.git",

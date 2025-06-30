@@ -5,7 +5,6 @@
 //  Created by Moiz Ahmed on 2025-04-18.
 //
 
-import BigIntModule
 import DynamicSwiftSDK
 import Foundation
 import SwiftUI
