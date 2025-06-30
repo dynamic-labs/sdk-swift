@@ -14,9 +14,9 @@
             filePath = "ExampleApp/UI/Wallet/WalletManagementView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "302"
-            endingLineNumber = "302"
-            landmarkName = "sendTransaction(for:)"
+            startingLineNumber = "297"
+            endingLineNumber = "297"
+            landmarkName = "signMessage(for:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

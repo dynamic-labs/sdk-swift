@@ -63,6 +63,7 @@ public enum EthereumConnectorError : Swift.Error {
 }
 public func formatEvmMessage(_ message: Swift.String) throws -> Foundation.Data
 public func formatEvmMessage(message: Foundation.Data) throws -> Foundation.Data
+public func deriveEthereumAccountAddress(from rawPublicKey: Foundation.Data) -> (address: Swift.String, pubkeyHex: Swift.String)
 public protocol EthereumTransactionProtocol {
   init(from: DynamicSwiftSDK.EthereumAddress?, to: DynamicSwiftSDK.EthereumAddress, value: DynamicSwiftSDK.BigUInt?, data: Foundation.Data?, nonce: Swift.Int?, gasPrice: DynamicSwiftSDK.BigUInt?, gasLimit: DynamicSwiftSDK.BigUInt?, chainId: Swift.Int?)
   init(from: DynamicSwiftSDK.EthereumAddress?, to: DynamicSwiftSDK.EthereumAddress, data: Foundation.Data, gasPrice: DynamicSwiftSDK.BigUInt, gasLimit: DynamicSwiftSDK.BigUInt)
@@ -241,23 +242,6 @@ extension DynamicSwiftSDK.EthereumBlock : Swift.Comparable {
   public static func == (lhs: DynamicSwiftSDK.EthereumBlock, rhs: DynamicSwiftSDK.EthereumBlock) -> Swift.Bool
   public static func < (lhs: DynamicSwiftSDK.EthereumBlock, rhs: DynamicSwiftSDK.EthereumBlock) -> Swift.Bool
 }
-public struct EthereumLog : Swift.Equatable {
-  public let transactionHash: Swift.String?
-  public let blockHash: Swift.String?
-  public let blockNumber: DynamicSwiftSDK.EthereumBlock
-  public let address: DynamicSwiftSDK.EthereumAddress
-  public var data: Swift.String
-  public var topics: [Swift.String]
-  public let removed: Swift.Bool?
-  public static func == (a: DynamicSwiftSDK.EthereumLog, b: DynamicSwiftSDK.EthereumLog) -> Swift.Bool
-}
-extension DynamicSwiftSDK.EthereumLog : Swift.Codable {
-  public init(from decoder: any Swift.Decoder) throws
-  public func encode(to encoder: any Swift.Encoder) throws
-}
-extension DynamicSwiftSDK.EthereumLog : Swift.Comparable {
-  public static func < (lhs: DynamicSwiftSDK.EthereumLog, rhs: DynamicSwiftSDK.EthereumLog) -> Swift.Bool
-}
 public struct DynamicSignedTransaction {
   public let raw: Foundation.Data?
   public init(raw: Foundation.Data?)
@@ -314,6 +298,23 @@ public struct BlockchainAddress : Swift.Hashable, Swift.Equatable, Swift.CustomS
   public var hashValue: Swift.Int {
     get
   }
+}
+public struct EthereumLog : Swift.Equatable {
+  public let transactionHash: Swift.String?
+  public let blockHash: Swift.String?
+  public let blockNumber: DynamicSwiftSDK.EthereumBlock
+  public let address: DynamicSwiftSDK.EthereumAddress
+  public var data: Swift.String
+  public var topics: [Swift.String]
+  public let removed: Swift.Bool?
+  public static func == (a: DynamicSwiftSDK.EthereumLog, b: DynamicSwiftSDK.EthereumLog) -> Swift.Bool
+}
+extension DynamicSwiftSDK.EthereumLog : Swift.Codable {
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+extension DynamicSwiftSDK.EthereumLog : Swift.Comparable {
+  public static func < (lhs: DynamicSwiftSDK.EthereumLog, rhs: DynamicSwiftSDK.EthereumLog) -> Swift.Bool
 }
 public struct EthereumHeader : Swift.Codable {
   public let parentHash: Swift.String
@@ -559,82 +560,51 @@ extension DynamicSwiftSDK.BaseEthereumClient {
 public struct RLP {
   public static func encode(_ item: Any) -> Foundation.Data?
 }
-public struct WalletAccount {
-  public let walletId: Swift.String
-  public let accountAddress: Swift.String
+public class HttpNetworkProvider : DynamicSwiftSDK.NetworkProviderProtocol {
+  final public let session: Foundation.URLSession
+  public init(session: Foundation.URLSession, url: Foundation.URL, headers: [Swift.String : Swift.String]? = nil)
+  @objc deinit
+  public func send<P, U>(method: Swift.String, params: P, receive: U.Type) async throws -> Any where P : Swift.Encodable, U : Swift.Decodable
 }
-public struct BaseError : Swift.Error {
-  public let name: Swift.String
-  public let shortMessage: Swift.String
-  public let cause: (any Swift.Error)?
-  public let docsURL: Foundation.URL?
-  public init(name: Swift.String = "BaseError", shortMessage: Swift.String, cause: (any Swift.Error)? = nil, docsURL: Foundation.URL? = nil)
+public enum KeyUtilError : Swift.Error {
+  case invalidContext
+  case privateKeyInvalid
+  case unknownError
+  case signatureFailure
+  case signatureParseFailure
+  case badArguments
+  public static func == (a: DynamicSwiftSDK.KeyUtilError, b: DynamicSwiftSDK.KeyUtilError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
 }
-@_Concurrency.MainActor public func sendEmailOtp(client: DynamicSwiftSDK.DynamicClient, email: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
-public func bindSessionState(_ state: DynamicSwiftSDK.DynamicSessionState, to client: DynamicSwiftSDK.DynamicClient)
-@_Concurrency.MainActor public func initializeClient(client: DynamicSwiftSDK.DynamicClient) async throws
-public func verifyOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
-final public class DynamicSessionState : Foundation.ObservableObject {
-  @Combine.Published @_projectedValueProperty($isLoggedIn) final public var isLoggedIn: Swift.Bool {
-    get
-  }
-  final public var $isLoggedIn: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($isInitialized) final public var isInitialized: Swift.Bool {
-    get
-  }
-  final public var $isInitialized: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  public init()
-  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+@_hasMissingDesignatedInitializers public class KeyUtil {
+  public static func generatePrivateKeyData() -> Foundation.Data?
+  public static func generatePublicKey(from privateKey: Foundation.Data) throws -> Foundation.Data
+  public static func generateAddress(from publicKey: Foundation.Data) -> DynamicSwiftSDK.EthereumAddress
+  public static func sign(message: Foundation.Data, with privateKey: Foundation.Data, hashing: Swift.Bool) throws -> Foundation.Data
+  public static func recoverPublicKey(message: Foundation.Data, signature: Foundation.Data) throws -> Swift.String
   @objc deinit
 }
-@_Concurrency.MainActor public func socialLogin(client: DynamicSwiftSDK.DynamicClient, with provider: DynamicSwiftSDK.ProviderType, deepLinkUrl: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
-public enum ProjectSettingsError : Swift.Error {
-  case badRequest(Swift.String)
-  case unprocessable(Swift.String)
-  case serverError(Swift.String)
-  case unexpectedStatus(Swift.Int)
+@_Concurrency.MainActor public func sendEmailOtp(client: DynamicSwiftSDK.DynamicClient, email: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
+public func verifyOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
+public func waitForInit(client: DynamicSwiftSDK.DynamicClient) async throws
+extension Swift.Array where Element == DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential {
+  public func sortedByLastSelected() -> [DynamicSwiftSDK.JwtVerifiedCredential]
 }
-public func fetchProjectSettings(client: DynamicSwiftSDK.DynamicClient) async throws -> DynamicSwiftSDK.ProjectSettings
-@_Concurrency.MainActor public func logout(client: DynamicSwiftSDK.DynamicClient) async throws
-public func loadKeyShares(client: DynamicSwiftSDK.DynamicClient, accountAddress: Swift.String) -> [Swift.String]?
+@_Concurrency.MainActor public func createWalletAccount(client: DynamicSwiftSDK.DynamicClient) async throws -> Swift.String
 public struct DynamicCore {
 }
+public func getWalletIdFromAddress(client: DynamicSwiftSDK.DynamicClient, address: Swift.String) -> Swift.String?
 public struct DynamicCoreConfig {
   public var apiBaseUrl: Swift.String?
   public var keyshareUrl: Swift.String?
   public init(apiBaseUrl: Swift.String? = nil, keyshareUrl: Swift.String? = nil)
 }
-public struct JWK : Swift.Codable {
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-}
-public struct SessionKeys : Swift.Codable {
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-}
-public struct P256KeyPair {
-}
-public struct ClientSessionKey : Swift.Codable {
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-}
-public func buf2hex(_ buffer: Foundation.Data) -> Swift.String
-public func base64urlDecode(_ s: Swift.String?) -> Foundation.Data?
-public func compressRawPublicKey(_ rawPublicKey: Foundation.Data) -> Foundation.Data
-public func toEncodedFormat(publicKey: Swift.String, privateKey: Swift.String, privateKeyJwk: DynamicSwiftSDK.JWK, registered: Swift.Bool, expirationDate: Foundation.Date? = nil) -> Swift.String
-public func p256Keygen() -> DynamicSwiftSDK.P256KeyPair
-public func p256Sign(privateKeyJwk: DynamicSwiftSDK.JWK, message: Swift.String) -> Swift.String
-public func generateClientSessionKey() -> DynamicSwiftSDK.ClientSessionKey
-public func generateSessionSignature(privateKeyJwk: DynamicSwiftSDK.JWK, sessionId: Swift.String) -> Swift.String
-public func generateSessionSignature(privateKeyData: Foundation.Data, sessionId: Swift.String) -> Swift.String
-@_Concurrency.MainActor public func sendSmsOtp(client: DynamicSwiftSDK.DynamicClient, phoneNumber: Swift.String, phoneCountryCode: Swift.String, isoCountryCode: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
-public func subscribeToSelector<Slice>(_ client: DynamicSwiftSDK.DynamicClient, selector: @escaping (DynamicSwiftSDK.DynamicCoreState) -> Slice, onChange: @escaping (Slice) -> Swift.Void) -> () -> Swift.Void where Slice : Swift.Equatable
-public func randomURLSafeString(length: Swift.Int) -> Swift.String
-public func generateOAuthState() -> Swift.String
+@_Concurrency.MainActor public func recoverEncryptedBackupByWallet(client: DynamicSwiftSDK.DynamicClient, walletId: Swift.String, keyShareIds: [DynamicSwiftSDK.Uuid], address: Swift.String) async throws -> DynamicSwiftSDK.RecoverKeyshareResponse
+@_Concurrency.MainActor public func logout(client: DynamicSwiftSDK.DynamicClient) async throws
+public func sign(client: DynamicSwiftSDK.DynamicClient, accountAddress: Swift.String, message: Swift.String) async throws -> Swift.String
 public struct DynamicCoreState {
   public enum InitStatus {
     case uninitialized
@@ -653,22 +623,43 @@ public struct DynamicCoreState {
   public var walletAccounts: [DynamicSwiftSDK.WalletAccount]
   public var isLoggedIn: Swift.Bool
 }
-public func verifySmsOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
-extension Swift.Array where Element == DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential {
-  public func sortedByLastSelected() -> [DynamicSwiftSDK.JwtVerifiedCredential]
+@_Concurrency.MainActor public func presentSafariAuth(url: Foundation.URL, callbackUrlScheme: Swift.String, onDismiss: @escaping () -> Swift.Void, onCallback: @escaping (Foundation.URL) -> Swift.Void) throws
+@_Concurrency.MainActor public func dismissSafariAuth()
+public typealias ProjectSettings = DynamicSwiftSDK.Components.Schemas.ProjectSettings
+public typealias SdkUser = DynamicSwiftSDK.Components.Schemas.SdkUser
+public typealias ChainEnum = DynamicSwiftSDK.Components.Schemas.ChainEnum
+public typealias Currency = DynamicSwiftSDK.Components.Schemas.Currency
+public typealias NativeCurrency = DynamicSwiftSDK.Components.Schemas.NativeCurrency
+public typealias JwtVerifiedCredential = DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential
+public typealias NetworkConfigurationResponse = DynamicSwiftSDK.Components.Schemas.NetworkConfigurationResponse
+public typealias Provider = DynamicSwiftSDK.Components.Schemas.Provider
+public typealias ProviderType = DynamicSwiftSDK.Components.Schemas.ProviderEnum
+public typealias WalletKeyshares = DynamicSwiftSDK.Components.Schemas.WalletKeyShareInfo
+public typealias Uuid = DynamicSwiftSDK.Components.Schemas.Uuid
+public typealias KeyshareLocations = DynamicSwiftSDK.Components.Schemas.WaasBackupOptionsEnum
+public typealias RecoverKeyshareResponse = DynamicSwiftSDK.Components.Schemas.RecoverMultipleClientKeySharesResponse
+public struct BaseError : Swift.Error {
+  public let name: Swift.String
+  public let shortMessage: Swift.String
+  public let cause: (any Swift.Error)?
+  public let docsURL: Foundation.URL?
+  public init(name: Swift.String = "BaseError", shortMessage: Swift.String, cause: (any Swift.Error)? = nil, docsURL: Foundation.URL? = nil)
 }
-@_Concurrency.MainActor public func getEnabledSocialProviders(client: DynamicSwiftSDK.DynamicClient) async throws -> [DynamicSwiftSDK.Provider]
+public struct WalletAccount {
+  public let walletId: Swift.String
+  public let accountAddress: Swift.String
+}
 public func getCore(client: DynamicSwiftSDK.DynamicClient) -> DynamicSwiftSDK.DynamicCore
-public struct OTPVerification {
-  public let email: Swift.String?
-  public let phoneNumber: Swift.String?
-  public let phoneCountryCode: Swift.String?
-  public let isoCountryCode: Swift.String?
-  public let verificationUUID: Swift.String
+@_Concurrency.MainActor public func sendSmsOtp(client: DynamicSwiftSDK.DynamicClient, phoneNumber: Swift.String, phoneCountryCode: Swift.String, isoCountryCode: Swift.String) async throws -> DynamicSwiftSDK.OTPVerification
+public struct DynamicLogger {
 }
-public func waitForInit(client: DynamicSwiftSDK.DynamicClient) async throws
+public struct Logger {
+}
 public func createDynamicClient(config: DynamicSwiftSDK.DynamicClientConfig) -> DynamicSwiftSDK.DynamicClient
-@_Concurrency.MainActor public func createWalletAccount(client: DynamicSwiftSDK.DynamicClient) async throws -> Swift.String
+@_Concurrency.MainActor public func initializeClient(client: DynamicSwiftSDK.DynamicClient) async throws
+@_Concurrency.MainActor public func socialLogin(client: DynamicSwiftSDK.DynamicClient, with provider: DynamicSwiftSDK.ProviderType, deepLinkUrl: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
+public func bindSessionState(_ state: DynamicSwiftSDK.DynamicSessionState, to client: DynamicSwiftSDK.DynamicClient)
+public func verifySmsOtp(otpVerification: DynamicSwiftSDK.OTPVerification, verificationToken: Swift.String) async throws -> DynamicSwiftSDK.SdkUser
 public struct DynamicClient {
   public init(core: DynamicSwiftSDK.DynamicCore)
   public var initStatus: DynamicSwiftSDK.DynamicCoreState.InitStatus {
@@ -701,58 +692,71 @@ extension DynamicSwiftSDK.DynamicClient : Swift.CustomStringConvertible, Swift.C
     get
   }
 }
-public func getWalletIdFromAddress(client: DynamicSwiftSDK.DynamicClient, address: Swift.String) -> Swift.String?
-@_Concurrency.MainActor public func presentSafariAuth(url: Foundation.URL, callbackUrlScheme: Swift.String, onDismiss: @escaping () -> Swift.Void, onCallback: @escaping (Foundation.URL) -> Swift.Void) throws
-@_Concurrency.MainActor public func dismissSafariAuth()
-public typealias ProjectSettings = DynamicSwiftSDK.Components.Schemas.ProjectSettings
-public typealias SdkUser = DynamicSwiftSDK.Components.Schemas.SdkUser
-public typealias ChainEnum = DynamicSwiftSDK.Components.Schemas.ChainEnum
-public typealias Currency = DynamicSwiftSDK.Components.Schemas.Currency
-public typealias NativeCurrency = DynamicSwiftSDK.Components.Schemas.NativeCurrency
-public typealias JwtVerifiedCredential = DynamicSwiftSDK.Components.Schemas.JwtVerifiedCredential
-public typealias NetworkConfigurationResponse = DynamicSwiftSDK.Components.Schemas.NetworkConfigurationResponse
-public typealias Provider = DynamicSwiftSDK.Components.Schemas.Provider
-public typealias ProviderType = DynamicSwiftSDK.Components.Schemas.ProviderEnum
-public typealias WalletKeyshares = DynamicSwiftSDK.Components.Schemas.WalletKeyShareInfo
-public typealias Uuid = DynamicSwiftSDK.Components.Schemas.Uuid
-public typealias KeyshareLocations = DynamicSwiftSDK.Components.Schemas.WaasBackupOptionsEnum
+final public class DynamicSessionState : Foundation.ObservableObject {
+  @Combine.Published @_projectedValueProperty($isLoggedIn) final public var isLoggedIn: Swift.Bool {
+    get
+  }
+  final public var $isLoggedIn: Combine.Published<Swift.Bool>.Publisher {
+    get
+  }
+  @Combine.Published @_projectedValueProperty($isInitialized) final public var isInitialized: Swift.Bool {
+    get
+  }
+  final public var $isInitialized: Combine.Published<Swift.Bool>.Publisher {
+    get
+  }
+  public init()
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
 public struct DynamicClientConfig {
   public let environmentId: Swift.String
   public let coreConfig: DynamicSwiftSDK.DynamicCoreConfig?
   public init(environmentId: Swift.String, coreConfig: DynamicSwiftSDK.DynamicCoreConfig? = nil)
 }
-public func sign(client: DynamicSwiftSDK.DynamicClient, accountAddress: Swift.String, message: Swift.String) async throws -> Swift.String
-public struct DynamicLogger {
+public enum ProjectSettingsError : Swift.Error {
+  case badRequest(Swift.String)
+  case unprocessable(Swift.String)
+  case serverError(Swift.String)
+  case unexpectedStatus(Swift.Int)
 }
-public struct Logger {
+public func fetchProjectSettings(client: DynamicSwiftSDK.DynamicClient) async throws -> DynamicSwiftSDK.ProjectSettings
+public func randomURLSafeString(length: Swift.Int) -> Swift.String
+public func generateOAuthState() -> Swift.String
+public func refreshUserFromToken(client: DynamicSwiftSDK.DynamicClient) async throws -> DynamicSwiftSDK.SdkUser
+public func loadKeyShares(client: DynamicSwiftSDK.DynamicClient, accountAddress: Swift.String) -> [Swift.String]?
+public struct JWK : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
 }
-public class HttpNetworkProvider : DynamicSwiftSDK.NetworkProviderProtocol {
-  final public let session: Foundation.URLSession
-  public init(session: Foundation.URLSession, url: Foundation.URL, headers: [Swift.String : Swift.String]? = nil)
-  @objc deinit
-  public func send<P, U>(method: Swift.String, params: P, receive: U.Type) async throws -> Any where P : Swift.Encodable, U : Swift.Decodable
+public struct SessionKeys : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
 }
-public enum KeyUtilError : Swift.Error {
-  case invalidContext
-  case privateKeyInvalid
-  case unknownError
-  case signatureFailure
-  case signatureParseFailure
-  case badArguments
-  public static func == (a: DynamicSwiftSDK.KeyUtilError, b: DynamicSwiftSDK.KeyUtilError) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
+public struct P256KeyPair {
 }
-@_hasMissingDesignatedInitializers public class KeyUtil {
-  public static func generatePrivateKeyData() -> Foundation.Data?
-  public static func generatePublicKey(from privateKey: Foundation.Data) throws -> Foundation.Data
-  public static func generateAddress(from publicKey: Foundation.Data) -> DynamicSwiftSDK.EthereumAddress
-  public static func sign(message: Foundation.Data, with privateKey: Foundation.Data, hashing: Swift.Bool) throws -> Foundation.Data
-  public static func recoverPublicKey(message: Foundation.Data, signature: Foundation.Data) throws -> Swift.String
-  @objc deinit
+public struct ClientSessionKey : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
 }
+public func buf2hex(_ buffer: Foundation.Data) -> Swift.String
+public func base64urlDecode(_ s: Swift.String?) -> Foundation.Data?
+public func compressRawPublicKey(_ rawPublicKey: Foundation.Data) -> Foundation.Data
+public func toEncodedFormat(publicKey: Swift.String, privateKey: Swift.String, privateKeyJwk: DynamicSwiftSDK.JWK, registered: Swift.Bool, expirationDate: Foundation.Date? = nil) -> Swift.String
+public func p256Keygen() -> DynamicSwiftSDK.P256KeyPair
+public func p256Sign(privateKeyJwk: DynamicSwiftSDK.JWK, message: Swift.String) -> Swift.String
+public func generateClientSessionKey() -> DynamicSwiftSDK.ClientSessionKey
+public func generateSessionSignature(privateKeyJwk: DynamicSwiftSDK.JWK, sessionId: Swift.String) -> Swift.String
+public func generateSessionSignature(privateKeyData: Foundation.Data, sessionId: Swift.String) -> Swift.String
+public struct OTPVerification {
+  public let email: Swift.String?
+  public let phoneNumber: Swift.String?
+  public let phoneCountryCode: Swift.String?
+  public let isoCountryCode: Swift.String?
+  public let verificationUUID: Swift.String
+}
+public func subscribeToSelector<Slice>(_ client: DynamicSwiftSDK.DynamicClient, selector: @escaping (DynamicSwiftSDK.DynamicCoreState) -> Slice, onChange: @escaping (Slice) -> Swift.Void) -> () -> Swift.Void where Slice : Swift.Equatable
+@_Concurrency.MainActor public func getEnabledSocialProviders(client: DynamicSwiftSDK.DynamicClient) async throws -> [DynamicSwiftSDK.Provider]
 extension DynamicSwiftSDK.BigUInt {
   public static func + (a: DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt) -> DynamicSwiftSDK.BigUInt
   public static func += (a: inout DynamicSwiftSDK.BigUInt, b: DynamicSwiftSDK.BigUInt)
@@ -1079,7 +1083,6 @@ extension DynamicSwiftSDK.BigInt {
   public func isStrongProbablePrime(_ base: DynamicSwiftSDK.BigInt) -> Swift.Bool
   public func isPrime(rounds: Swift.Int = 10) -> Swift.Bool
 }
-public func deriveEthereumAccountAddress(from rawPublicKey: Foundation.Data) -> (address: Swift.String, pubkeyHex: Swift.String)
 extension DynamicSwiftSDK.BigUInt {
   public mutating func subtractReportingOverflow(_ b: DynamicSwiftSDK.BigUInt, shiftedBy shift: Swift.Int = 0) -> Swift.Bool
   public func subtractingReportingOverflow(_ other: DynamicSwiftSDK.BigUInt, shiftedBy shift: Swift.Int) -> (partialValue: DynamicSwiftSDK.BigUInt, overflow: Swift.Bool)
@@ -28193,10 +28196,10 @@ extension DynamicSwiftSDK.WalletError : Swift.Equatable {}
 extension DynamicSwiftSDK.WalletError : Swift.Hashable {}
 extension DynamicSwiftSDK.EthereumKeyStorageError : Swift.Equatable {}
 extension DynamicSwiftSDK.EthereumKeyStorageError : Swift.Hashable {}
-extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Equatable {}
-extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Hashable {}
 extension DynamicSwiftSDK.KeyUtilError : Swift.Equatable {}
 extension DynamicSwiftSDK.KeyUtilError : Swift.Hashable {}
+extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Equatable {}
+extension DynamicSwiftSDK.DynamicCoreState.InitStatus : Swift.Hashable {}
 extension DynamicSwiftSDK.BigInt.Sign : Swift.Equatable {}
 extension DynamicSwiftSDK.BigInt.Sign : Swift.Hashable {}
 extension DynamicSwiftSDK.ABIError : Swift.Equatable {}

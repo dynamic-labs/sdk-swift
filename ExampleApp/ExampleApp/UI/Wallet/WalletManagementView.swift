@@ -5,7 +5,6 @@
 //  Created by DS on 2025-06-27.
 //
 
-
 import DynamicSwiftSDK
 import Foundation
 import SwiftUI
@@ -20,6 +19,8 @@ struct WalletManagementView: View {
     @State private var addressCopied = false
     @State private var balance: String?
     @State private var keySharesAvailable: Bool?
+    @State private var isRecoveringKeyshare = false
+    @State private var recoveryMessage: String?
     
     var body: some View {
         ScrollView {
@@ -164,6 +165,25 @@ struct WalletManagementView: View {
                         }
                     }
                     
+                    if hasKeySharesInWaasProperties() {
+                        walletActionButton(
+                            title: isRecoveringKeyshare ? "Recovering..." : "Recover Keyshare",
+                            systemImage: isRecoveringKeyshare ? "arrow.clockwise" : "key.viewfinder"
+                        ) {
+                            Task {
+                                await recoverKeyshare()
+                            }
+                        }
+                        .disabled(isRecoveringKeyshare)
+                        
+                        if let recoveryMessage = recoveryMessage {
+                            Text(recoveryMessage)
+                                .font(.caption)
+                                .foregroundColor(recoveryMessage.contains("✅") ? .green : .red)
+                                .padding(.horizontal)
+                        }
+                    }
+                    
                 } else {
                     Text("Loading wallet...")
                         .foregroundColor(.secondary)
@@ -240,13 +260,12 @@ struct WalletManagementView: View {
     private func fetchBalance(for wallet: EthereumWallet) async {
         do {
             print("🔍 Fetching balance from Ethereum Sepolia...")
-            
             // Switch to Ethereum Sepolia network first
             let sepoliaNetwork = SupportedEthereumNetwork.sepoliaTestnet.chainConfig
             try await wallet.switchNetwork(to: sepoliaNetwork)
             
-//            // Now get balance using the public method (this will use the current network)
-            let balanceWei = try await wallet.getBalanceString()
+            // Now get balance using the public method (this will use the current network)
+            let balanceWei = try await wallet.getBalance(.Latest)
             
             print("💰 Balance in Wei: \(balanceWei)")
             
@@ -290,9 +309,10 @@ struct WalletManagementView: View {
                 signature = nil
             }
             
-            let verificationResult = try verifySignature(message: message, signature: signature!, walletAddress: wallet.accountAddress.asString())
-            print("Verification Result: \(verificationResult)")
-            
+            if let signature = signature {
+                let verificationResult = try verifySignature(message: message, signature: signature, walletAddress: wallet.accountAddress.asString())
+                print("Verification Result: \(verificationResult)")
+            }
         }
     }
     
@@ -306,7 +326,7 @@ struct WalletManagementView: View {
             do {
                 let networkClient: BaseEthereumClient = try await wallet.getNetworkClient(for: chainId)
                 
-                let gasPrice = try await networkClient.eth_gasPriceString()
+                let gasPrice = try await networkClient.eth_gasPriceBigInt()
                 let gasLimit = BigUInt(21_000) // Standard ETH transfer
                 
                 print("🌐 Network: Ethereum Sepolia (Chain ID: \(chainId))")
@@ -322,7 +342,7 @@ struct WalletManagementView: View {
                     value: amount,
                     data: Data(),
                     nonce: nil,
-                    gasPrice: BigUInt(gasPrice),
+                    gasPrice: gasPrice,
                     gasLimit: gasLimit,
                     chainId: chainId
                 )
@@ -362,6 +382,85 @@ struct WalletManagementView: View {
         let keyShares = loadKeyShares(client: client, accountAddress: address)
         await MainActor.run {
             keySharesAvailable = keyShares != nil
+        }
+    }
+    
+    private func hasKeySharesInWaasProperties() -> Bool {
+        guard let walletProperties = credential.walletProperties,
+              let waasProperties = walletProperties.value5,
+              let keyShares = waasProperties.keyShares,
+              !keyShares.isEmpty else {
+            return false
+        }
+        return true
+    }
+    
+    private func getKeyShareIds() -> [Uuid]? {
+        guard let walletProperties = credential.walletProperties,
+              let waasProperties = walletProperties.value5,
+              let keyShares = waasProperties.keyShares else {
+            return nil
+        }
+        
+        return keyShares.map { $0.id }
+    }
+    
+    private func recoverKeyshare() async {
+        await MainActor.run {
+            isRecoveringKeyshare = true
+            recoveryMessage = nil
+        }
+        
+        let walletId = credential.id
+        
+        guard let keyShareIds = getKeyShareIds() else {
+            print("❌ No keyshare IDs found in wallet properties")
+            await MainActor.run {
+                recoveryMessage = "❌ No keyshare IDs found"
+                isRecoveringKeyshare = false
+            }
+            return
+        }
+        
+        print("🔄 Starting keyshare recovery...")
+        print("📍 Wallet ID: \(walletId)")
+        print("🔑 Keyshare IDs: \(keyShareIds)")
+        
+        do {
+            if let wallet = primaryWallet {
+               
+                _ = try await recoverEncryptedBackupByWallet(
+                    client: client,
+                    walletId: walletId,
+                    keyShareIds: keyShareIds,
+                    address: wallet.address.asString()
+                )
+                print("✅ Keyshare recovery completed successfully!")
+                await MainActor.run {
+                    recoveryMessage = "✅ Keyshare recovered successfully!"
+                    isRecoveringKeyshare = false
+                }
+                
+                // Refresh the keyshares availability status
+                await checkKeySharesAvailability()
+                
+                // Clear success message after 3 seconds
+                Task {
+                    try? await Task.sleep(nanoseconds: 3_000_000_000)
+                    await MainActor.run {
+                        if recoveryMessage?.contains("✅") == true {
+                            recoveryMessage = nil
+                        }
+                    }
+                }
+            }
+            
+        } catch {
+            print("❌ Failed to recover keyshares: \(error)")
+            await MainActor.run {
+                recoveryMessage = "❌ Recovery failed: \(error.localizedDescription)"
+                isRecoveringKeyshare = false
+            }
         }
     }
 }
